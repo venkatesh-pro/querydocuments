@@ -26,7 +26,7 @@ const pineconeDb = async () => {
   }
 };
 
-// pineconeDb();
+pineconeDb();
 
 const awsConfig = {
   apiVersion: process.env.AWS_API_VERSION,
