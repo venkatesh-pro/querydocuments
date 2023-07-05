@@ -8,12 +8,16 @@ const index = () => {
 
   const handleUploadFile = async (e) => {
     if (auth.token) {
-      const file = e.target.files[0];
-      const formData = new FormData();
-      formData.append("file", file);
-      const { data } = await fileUploadFunction(auth.token, formData);
+      try {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+        const { data } = await fileUploadFunction(auth.token, formData);
 
-      console.log(data);
+        console.log(data);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
   return (

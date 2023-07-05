@@ -5,5 +5,9 @@ export const fileUploadFunction = async (authtoken, file) => {
     headers: {
       authtoken: authtoken,
     },
+
+    onUploadProgress: (progressData) => {
+      console.log(progressData);
+    },
   });
 };
