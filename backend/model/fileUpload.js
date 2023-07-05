@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Schema.Types;
 
 const fileUploadSchema = mongoose.Schema(
   {
@@ -10,8 +11,11 @@ const fileUploadSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    embeddingUrl: {
-      type: String,
+    userId: {
+      type: ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
     },
   },
   { timestamps: true }

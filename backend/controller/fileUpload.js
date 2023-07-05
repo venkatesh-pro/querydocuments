@@ -6,6 +6,7 @@ const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { PineconeClient } = require("@pinecone-database/pinecone");
 const { PineconeStore } = require("langchain/vectorstores");
 const { OpenAIEmbeddings } = require("langchain/embeddings");
+const FileUpload = require("../model/fileUpload");
 
 // pinecone
 let pineconeClient;
@@ -80,8 +81,12 @@ const processStoring = async (res, file, text, userId) => {
           pineconeIndex,
         }
       );
-
-      return res.json("Success");
+      const fileUploadRes = await FileUpload.create({
+        fileName: fileName,
+        fileUrl: data.Location,
+        userId: userId,
+      });
+      return res.json(fileUploadRes._id);
     } else {
       return res.status(400).json({
         error: "File Upload Failed",

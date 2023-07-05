@@ -2,9 +2,12 @@ import axios from "axios";
 import React from "react";
 import { fileUploadFunction } from "../function/fileUpload";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
 const index = () => {
   const { auth } = useSelector((state) => ({ ...state }));
+
+  const router = useRouter();
 
   const handleUploadFile = async (e) => {
     if (auth.token) {
@@ -15,6 +18,7 @@ const index = () => {
         const { data } = await fileUploadFunction(auth.token, formData);
 
         console.log(data);
+        if (data) router.push(`chat/${data}`);
       } catch (error) {
         console.log(error);
       }
