@@ -7,8 +7,11 @@ const index = () => {
   const { auth } = useSelector((state) => ({ ...state }));
 
   const handleUploadFile = async (e) => {
-    if(auth.token){
-      const { data } = await fileUploadFunction(auth.token);
+    if (auth.token) {
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+      const { data } = await fileUploadFunction(auth.token, formData);
 
       console.log(data);
     }
