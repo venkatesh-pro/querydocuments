@@ -33,9 +33,14 @@ const Header = () => {
           </button>
         </li>
         {auth?.token ? (
-          <li>
-            <button onClick={handleLogout}>Logout</button>
-          </li>
+          <>
+            <li>
+              <button onClick={handleLogout}>Logout</button>
+            </li>
+            <li>
+              <Link href={"/chat"}>Chat</Link>
+            </li>
+          </>
         ) : (
           <>
             <li>

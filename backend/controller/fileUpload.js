@@ -7,6 +7,9 @@ const { PineconeClient } = require("@pinecone-database/pinecone");
 const { PineconeStore } = require("langchain/vectorstores");
 const { OpenAIEmbeddings } = require("langchain/embeddings");
 const FileUpload = require("../model/fileUpload");
+const FileQuery = require("../model/fileQuery");
+const { RetrievalQAChain } = require("langchain/chains");
+const { OpenAI } = require("langchain/llms");
 
 // pinecone
 let pineconeClient;
@@ -63,8 +66,14 @@ const processStoring = async (res, file, text, userId) => {
     console.log(data.Location);
 
     if (data.Location) {
+      const fileUploadRes = await FileUpload.create({
+        fileName: fileName,
+        fileUrl: data.Location,
+        userId: userId,
+      });
       const user = {
         userId: userId,
+        fileId: fileUploadRes._id.toString(),
       };
       const text_splitter = new RecursiveCharacterTextSplitter({
         chunkSize: 1000,
@@ -81,11 +90,7 @@ const processStoring = async (res, file, text, userId) => {
           pineconeIndex,
         }
       );
-      const fileUploadRes = await FileUpload.create({
-        fileName: fileName,
-        fileUrl: data.Location,
-        userId: userId,
-      });
+
       return res.json(fileUploadRes._id);
     } else {
       return res.status(400).json({
@@ -132,6 +137,59 @@ exports.uploadFile = async (req, res) => {
     console.log(error);
     res.status(400).json({
       error: "No User Found",
+    });
+  }
+};
+
+// query pinecone
+
+exports.sendMessage = async (req, res) => {
+  try {
+    const { email } = req.user;
+
+    const user = await User.findOne({ email }).select("_id");
+    console.log(user);
+
+    await FileQuery.create({
+      userId: user._id,
+      fileId: req.body.fileId,
+      message: req.body.message,
+      isHuman: true,
+    });
+
+    // query the pinecone
+    const vectorStore = await PineconeStore.fromExistingIndex(
+      new OpenAIEmbeddings(),
+      {
+        pineconeIndex,
+        filter: {
+          userId: user._id.toString(),
+          fileId: req.body.fileId,
+        },
+      }
+    );
+    const model = new OpenAI({ modelName: "gpt-3.5-turbo" });
+
+    const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever(1), {
+      returnSourceDocuments: true,
+    });
+    const response = await chain.call({
+      query: req.body.message,
+    });
+
+    console.log(response);
+
+    const createdAI = await FileQuery.create({
+      userId: user._id,
+      fileId: req.body.fileId,
+      message: response.text,
+      isHuman: false,
+    });
+    res.json(createdAI);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      error: "Fetch Failed",
     });
   }
 };

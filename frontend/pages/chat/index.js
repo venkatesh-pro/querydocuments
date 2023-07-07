@@ -33,7 +33,7 @@ const index = () => {
             setAllUploads={setAllUploads}
           />
 
-          <Chat />
+          <div>we need to add upload pdf feature here</div>
         </>
       )}
     </div>
