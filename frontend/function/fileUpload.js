@@ -1,7 +1,7 @@
-import axios from "axios";
+import api from "../utils/http-client";
 
 export const fileUploadFunction = async (authtoken, file) => {
-  return await axios.post(`http://localhost:5000/api/uploadFile`, file, {
+  return await api.post(`/uploadFile`, file, {
     headers: {
       authtoken: authtoken,
     },

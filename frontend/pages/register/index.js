@@ -17,6 +17,10 @@ const index = () => {
         const idTokenResult = await user.getIdTokenResult();
 
         const { data } = await registerFunction(idTokenResult.token);
+        data.token = idTokenResult.token;
+
+        window.localStorage.setItem("auth", JSON.stringify(data));
+
         dispatch({
           type: "LOGIN",
           payload: {

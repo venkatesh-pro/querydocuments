@@ -1,8 +1,8 @@
-import axios from "axios";
+import api from "../utils/http-client";
 
 export const registerFunction = async (authtoken) => {
-  return await axios.post(
-    `http://localhost:5000/api/auth`,
+  return await api.post(
+    `/auth`,
     {},
     {
       headers: {
@@ -13,7 +13,7 @@ export const registerFunction = async (authtoken) => {
 };
 
 export const currentUserFunction = async (authtoken) => {
-  return await axios.get(`http://localhost:5000/api/current-user`, {
+  return await api.get(`/current-user`, {
     headers: {
       authtoken: authtoken,
     },

@@ -1,10 +1,11 @@
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { firebaseAuth } from "../../config/firebase";
 import { useRouter } from "next/router";
 
 const Header = () => {
+  const [isUser, setIsUser] = useState(false);
   const { auth } = useSelector((state) => ({ ...state }));
 
   const dispatch = useDispatch();
@@ -13,7 +14,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       firebaseAuth.signOut();
-
+      window.localStorage.removeItem("auth");
       dispatch({
         type: "LOGOUT",
         payload: null,
@@ -24,6 +25,12 @@ const Header = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (auth.token) {
+      setIsUser(true);
+    }
+  }, [auth]);
   return (
     <div className="h-[8vh] bg-red-400">
       <ul className="w-[50vw] h-full items-center  flex justify-between">
@@ -32,7 +39,7 @@ const Header = () => {
             <Link href={"/"}>Home</Link>
           </button>
         </li>
-        {auth?.token ? (
+        {isUser && auth?.token ? (
           <>
             <li>
               <button onClick={handleLogout}>Logout</button>
