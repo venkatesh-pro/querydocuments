@@ -65,27 +65,14 @@ const uploadS3AndPineConeFunctionFree = async (file, user) => {
     const fileName = file.name;
     const parts = fileName.split(".");
     const extension = parts[parts.length - 1];
-    if (file.mimetype) {
-      const params = {
-        Bucket: process.env.BUCKET_NAME,
-        Key: `${uuidv4()}.${extension}`,
-        Body: file.data,
-        ACL: "public-read",
-        ContentEncoding: "7bit",
-        ContentType: file.mimetype,
-      };
-      const data = await s3
-        .upload(params)
-        .on("httpUploadProgress", (progress) => {
-          console.log("S3 Upload Progress:", progress);
-        })
-        .promise();
-
+    if (file.mimetype === "application/pdf") {
+      const text = await processPdf(file);
+      const fileUploadId = await processStoring(file, text, user);
       // Increment the totalFileUsed count
       user.freePlanUsageData.totalFileUsed += 1;
       await user.save();
 
-      return "Successfully Uploaded";
+      return fileUploadId;
     } else {
       throw new Error("invalid file type");
     }
@@ -99,27 +86,15 @@ const uploadS3AndPineConeFunctionPaid = async (file, user) => {
     const fileName = file.name;
     const parts = fileName.split(".");
     const extension = parts[parts.length - 1];
-    if (file.mimetype) {
-      const params = {
-        Bucket: process.env.BUCKET_NAME,
-        Key: `${uuidv4()}.${extension}`,
-        Body: file.data,
-        ACL: "public-read",
-        ContentEncoding: "7bit",
-        ContentType: file.mimetype,
-      };
-      const data = await s3
-        .upload(params)
-        .on("httpUploadProgress", (progress) => {
-          console.log("S3 Upload Progress:", progress);
-        })
-        .promise();
+    if (file.mimetype === "application/pdf") {
+      const text = await processPdf(file);
+      const fileUploadId = await processStoring(file, text, user);
 
       // Increment the totalFileUsed count
       user.paidPlanUsageData.totalFileUsed += 1;
       await user.save();
 
-      return "Successfully Uploaded";
+      return fileUploadId;
     } else {
       throw new Error("invalid file type");
     }
@@ -139,8 +114,8 @@ const freeUsageUpload = async (file, user) => {
       user.freePlanUsageData.totalFileUsed <
       planFeature["free"].maxFileUsedPerDay
     ) {
-      await uploadS3AndPineConeFunctionFree(file, user);
-      return "sucess";
+      const fileUploadId = await uploadS3AndPineConeFunctionFree(file, user);
+      return fileUploadId;
     } else {
       throw new Error("Limit Execeded");
     }
@@ -161,8 +136,11 @@ const freeUsageUpload = async (file, user) => {
       updatedFreeUsageUser.freePlanUsageData.totalFileUsed <
       planFeature["free"].maxFileUsedPerDay
     ) {
-      await uploadS3AndPineConeFunctionFree(file, updatedFreeUsageUser);
-      return "sucess";
+      const fileUploadId = await uploadS3AndPineConeFunctionFree(
+        file,
+        updatedFreeUsageUser
+      );
+      return fileUploadId;
     } else {
       throw new Error("Limit Execeded");
     }
@@ -176,8 +154,8 @@ const paidUsageUpload = async (file, user, planFeature) => {
   // if todayDate and user saved date is today, we are using today, else we will reset to totalFileUser:0, so user can continue uploading
   if (todayDate == user.paidPlanUsageData.todayDate) {
     if (user.paidPlanUsageData.totalFileUsed < planFeature.maxFileUsedPerDay) {
-      await uploadS3AndPineConeFunctionPaid(file, user);
-      return "sucess";
+      const fileUploadId = await uploadS3AndPineConeFunctionPaid(file, user);
+      return fileUploadId;
     } else {
       throw new Error("Limit Execeded");
     }
@@ -198,15 +176,18 @@ const paidUsageUpload = async (file, user, planFeature) => {
       updatedPaidUsageUser.paidPlanUsageData.totalFileUsed <
       planFeature.maxFileUsedPerDay
     ) {
-      await uploadS3AndPineConeFunctionPaid(file, updatedPaidUsageUser);
-      return "sucess";
+      const fileUploadId = await uploadS3AndPineConeFunctionPaid(
+        file,
+        updatedPaidUsageUser
+      );
+      return fileUploadId;
     } else {
       throw new Error("Limit Execeded");
     }
   }
 };
 
-const processStoring = async (res, file, text, userId) => {
+const processStoring = async (file, text, userData) => {
   // split the text
   try {
     const fileName = file.name;
@@ -214,7 +195,7 @@ const processStoring = async (res, file, text, userId) => {
     const extension = parts[parts.length - 1];
 
     const params = {
-      Bucket: "documentsuploads3",
+      Bucket: process.env.BUCKET_NAME,
       Key: `${uuidv4()}.${extension}`,
       Body: file.data,
       ACL: "public-read",
@@ -234,10 +215,10 @@ const processStoring = async (res, file, text, userId) => {
       const fileUploadRes = await FileUpload.create({
         fileName: fileName,
         fileUrl: data.Location,
-        userId: userId,
+        userId: userData._id.toString(),
       });
       const user = {
-        userId: userId,
+        userId: userData._id.toString(),
         fileId: fileUploadRes._id.toString(),
       };
       const text_splitter = new RecursiveCharacterTextSplitter({
@@ -256,17 +237,13 @@ const processStoring = async (res, file, text, userId) => {
         }
       );
 
-      return res.json(fileUploadRes._id);
+      return fileUploadRes._id;
     } else {
-      return res.status(400).json({
-        error: "File Upload Failed",
-      });
+      throw new Error("File Upload Failed");
     }
   } catch (error) {
     console.log(error);
-    return res.status(400).json({
-      error: "Please Try Again Your File Not Processed Properly",
-    });
+    throw new Error("File Upload Failed");
   }
 };
 const processPdf = async (file) => {
@@ -277,20 +254,6 @@ const processOtherDocs = async (file) => {};
 
 exports.uploadFile = async (req, res) => {
   try {
-    const file = req.files.file;
-
-    // if (file.mimetype === "application/pdf") {
-    //   const text = await processPdf(file);
-    //   return await processStoring(res, file, text, user._id.toString());
-    // } else if (
-    //   file.mimetype === "application/msword" ||
-    //   file.mimetype ===
-    //     "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    // ) {
-    //   const text = await processOtherDocs(file);
-
-    //   return res.json(text);
-    // }
     const { email } = req.user;
 
     const user = await User.findOne({ email });
@@ -333,34 +296,39 @@ exports.uploadFile = async (req, res) => {
         if (user.plan === "basic") {
           // basic plan
 
-          const data = await paidUsageUpload(
+          const fileUploadId = await paidUsageUpload(
             req.files.file,
             user,
             planFeature["basic"]
           );
-          return res.json("Success basic");
+          console.log("success basic");
+          return res.json(fileUploadId);
         } else if (user.plan === "pro") {
           // pro plan
 
-          const data = await paidUsageUpload(
+          const fileUploadId = await paidUsageUpload(
             req.files.file,
             user,
             planFeature["pro"]
           );
-          return res.json("Success pro");
+          console.log("success pro");
+
+          return res.json(fileUploadId);
         }
       } else {
         // free plan
-        const data = await freeUsageUpload(req.files.file, user);
-        return res.json("Success free");
+        const fileUploadId = await freeUsageUpload(req.files.file, user);
+        console.log("success free");
+
+        return res.json(fileUploadId);
       }
     } else {
       // free plan
-      const data = await freeUsageUpload(req.files.file, user);
+      const fileUploadId = await freeUsageUpload(req.files.file, user);
+      console.log("success free");
 
-      return res.json("Success free");
+      return res.json(fileUploadId);
     }
-    res.json("'dddd'");
   } catch (error) {
     console.log(error);
     console.log(error.message);
