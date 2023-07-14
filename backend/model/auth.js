@@ -25,6 +25,67 @@ const userSchema = mongoose.Schema(
       type: Array,
       default: "User",
     },
+    stripeCustomerId: {
+      type: String,
+    },
+    razorpayCustomerId: {
+      type: String,
+    },
+    stripeSubscriptionId: {
+      type: String,
+    },
+    razorpaySubscriptionId: {
+      type: String,
+    },
+    isStripe: {
+      type: Boolean,
+    },
+    isRazorpay: {
+      type: Boolean,
+    },
+    plan: {
+      type: String,
+      default: "free",
+      required: true,
+      enum: ["free", "basic", "pro"],
+    },
+
+    freePlanUsageData: {
+      totalFileUsed: {
+        type: Number,
+        default: 0,
+      },
+      totalQuestionsAsked: {
+        type: Number,
+        default: 0,
+      },
+      todayDate: {
+        type: Number,
+        required: true,
+        default: () => new Date().getDate(),
+      },
+    },
+    paidPlanUsageData: {
+      totalFileUsed: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
+      totalQuestionsAsked: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
+      todayDate: {
+        type: Number,
+        required: true,
+        default: () => new Date().getDate(),
+      },
+      expiry: {
+        type: Number,
+        // required: true,
+      },
+    },
   },
   { timestamps: true }
 );

@@ -27,7 +27,7 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if (auth.token) {
+    if (auth?.token) {
       setIsUser(true);
     }
   }, [auth]);
