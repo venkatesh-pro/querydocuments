@@ -3,8 +3,9 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Head from "next/head";
+import api from "../utils/http-client";
 
-const plan = () => {
+const checkout = () => {
   const [plan, setPlan] = useState("");
   const [payments, setPayments] = useState("");
   const [planFromDb, setPlanFromDb] = useState("");
@@ -20,7 +21,7 @@ const plan = () => {
 
   const handleSubmit = async () => {
     if (payments === "stripe") {
-      const { data } = await axios.post(
+      const { data } = await api.post(
         `http://localhost:5000/api/subscribe-stripe`,
         {
           plan: plan,
@@ -36,7 +37,7 @@ const plan = () => {
 
       router.push(data);
     } else if (payments === "razorpay") {
-      const { data } = await axios.post(
+      const { data } = await api.post(
         `http://localhost:5000/api/subscribe-razorpay`,
         {
           plan: plan,
@@ -82,7 +83,7 @@ const plan = () => {
   };
   const whichplanFunction = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/whichplan`, {
+      const { data } = await api.get(`http://localhost:5000/api/whichplan`, {
         headers: {
           authToken: auth.token,
         },
@@ -104,7 +105,7 @@ const plan = () => {
     try {
       console.log("clicked");
       // post for security reason
-      const { data } = await axios.post(
+      const { data } = await api.post(
         `http://localhost:5000/api/cancelSubscribe`,
         {},
         {
@@ -194,4 +195,4 @@ const plan = () => {
   );
 };
 
-export default plan;
+export default checkout;
