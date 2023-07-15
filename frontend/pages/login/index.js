@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { firebaseAuth, googleAuthProvider } from "../../config/firebase";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
-import { registerFunction } from "../../function/auth";
+import { loginFunction } from "../../function/auth";
 
 const index = () => {
   const dispatch = useDispatch();
@@ -15,7 +15,7 @@ const index = () => {
       const { user } = res;
       if (user) {
         const idTokenResult = await user.getIdTokenResult();
-        const { data } = await registerFunction(idTokenResult.token);
+        const { data } = await loginFunction(idTokenResult.token);
 
         data.token = idTokenResult.token;
         window.localStorage.setItem("auth", JSON.stringify(data));
