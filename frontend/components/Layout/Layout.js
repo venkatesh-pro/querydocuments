@@ -9,7 +9,9 @@ const Layout = ({ children }) => {
   const router = useRouter();
   return (
     <div>
-      {router.pathname !== "/chat" && <Header />}
+      {router.pathname !== "/chat" && router.pathname !== "/chat/[id]" && (
+        <Header />
+      )}
       {children}
     </div>
   );
