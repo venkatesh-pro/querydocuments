@@ -4,32 +4,10 @@ import { FileUpload } from "@mui/icons-material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import PricingCard from "./Cards/Pricing";
 import MobileViewPricingCard from "./Cards/MobileViewPricing";
+import { pricingInfo } from "../../constant/HomePage/Pricing";
 
 const Pricing = ({ fileTypes, handleUploadFile }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
-  const pricingInfo = [
-    {
-      plan: "Free",
-      price: 0,
-      totalFilesPerDay: 3,
-      totalPagesPerFile: 20,
-      totalQuestionPerDay: 30,
-    },
-    {
-      plan: "Basic",
-      price: 3,
-      totalFilesPerDay: 5,
-      totalPagesPerFile: 100,
-      totalQuestionPerDay: 100,
-    },
-    {
-      plan: "Pro",
-      price: 15,
-      totalFilesPerDay: 7,
-      totalPagesPerFile: 500,
-      totalQuestionPerDay: 300,
-    },
-  ];
 
   return (
     <div id="pricing" className="h-[80vh] flex flex-col items-center  ">

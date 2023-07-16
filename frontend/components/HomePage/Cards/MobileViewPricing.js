@@ -98,7 +98,7 @@ const MobileViewPricingCard = ({ pricingInfo }) => {
                   className="font-bold"
                   component="div"
                 >
-                  ${info.price}/mo
+                  ${info.dollarPrice}/mo
                 </Typography>
               </div>
               <div className="mt-9 flex flex-col">

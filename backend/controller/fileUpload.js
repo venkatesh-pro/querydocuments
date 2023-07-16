@@ -426,7 +426,7 @@ exports.subscribeStripe = async (req, res) => {
         // allow_promotion_codes: true,
 
         success_url: "http://localhost:3000/",
-        cancel_url: "http://localhost:3000/plan",
+        cancel_url: "http://localhost:3000/checkout",
       },
       {
         apiKey: process.env.STRIPE_SECRET_KEY,

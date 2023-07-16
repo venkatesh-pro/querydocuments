@@ -1,7 +1,7 @@
 import React from "react";
 import { FileUploader } from "react-drag-drop-files";
-import { FileUpload } from "@mui/icons-material";
-const Home = ({ fileTypes, handleUploadFile }) => {
+import FileUploadComponent from "../FileUpload/FileUploadComponent";
+const Home = () => {
   return (
     <div
       id="home"
@@ -15,22 +15,7 @@ const Home = ({ fileTypes, handleUploadFile }) => {
         </h1>
       </div>
       <div className="mt-10 w-full flex justify-center">
-        <FileUploader
-          handleChange={handleUploadFile}
-          name="file"
-          types={fileTypes}
-        >
-          <div className="cursor-pointer  sm:w-[600px] w-[90vw] h-[300px] border-2 items-center justify-center flex flex-col  bg-[#EEE6D8] relative rounded-2xl">
-            <FileUpload fontSize="large" />
-            <h3>Drop File</h3>
-            <p>
-              Accepts:{" "}
-              {fileTypes.map((type, i) => {
-                return `${i > 0 ? "," : ""}${type}`;
-              })}
-            </p>
-          </div>
-        </FileUploader>
+        <FileUploadComponent />
       </div>
     </div>
   );
