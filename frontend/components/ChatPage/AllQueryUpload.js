@@ -12,20 +12,20 @@ const AllQueryUpload = ({ allUploads }) => {
     <div className="mt-4">
       {allUploads.map((allUpload) => {
         return (
-          <CardActionArea>
-            <div className=" pt-2 pb-2">
+          <div className="">
+            <CardActionArea>
               <button
                 className={`${
-                  router.query.id == allUpload._id ? "bg-white" : ""
-                } w-full text-start`}
+                  router.query.id == allUpload._id ? "bg-[#fffaf2]" : ""
+                } w-full h-full text-start p-2`}
                 onClick={() => {
                   router.push(`/chat/${allUpload._id}`);
                 }}
               >
                 <ChatBubbleOutline fontSize="small" /> {allUpload.fileName}
               </button>
-            </div>
-          </CardActionArea>
+            </CardActionArea>
+          </div>
         );
       })}
     </div>

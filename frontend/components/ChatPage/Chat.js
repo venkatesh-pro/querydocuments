@@ -5,6 +5,8 @@ import {
   sendMessageFunction,
 } from "../../function/queryUpload";
 import { useSelector } from "react-redux";
+import { Button, TextField, TextareaAutosize } from "@mui/material";
+import { Send } from "@mui/icons-material";
 
 const Chat = ({}) => {
   const [value, setValue] = useState("");
@@ -26,34 +28,38 @@ const Chat = ({}) => {
   }, [router.query]);
 
   const sendMessage = async (value) => {
-    console.log(value);
-    setChat((prevChat) => [
-      ...prevChat,
-      {
+    try {
+      console.log(value);
+      setChat((prevChat) => [
+        ...prevChat,
+        {
+          message: value.message,
+          isHuman: true,
+        },
+      ]);
+      const { data } = await sendMessageFunction(auth.token, {
         message: value.message,
-        isHuman: true,
-      },
-    ]);
-    const { data } = await sendMessageFunction(auth.token, {
-      message: value.message,
-      fileId: router.query.id,
-    });
+        fileId: router.query.id,
+      });
 
-    console.log(data);
+      console.log(data);
 
-    setChat((prevChat) => [...prevChat, data]);
+      setChat((prevChat) => [...prevChat, data]);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
-    <div className="w-full relative p-10">
+    <div className="w-full relative h-[92vh] overflow-scroll ">
       {/* <pre>{JSON.stringify(chat, null, 4)}</pre> */}
-      <div className="flex flex-col gap-4 overflow-scroll">
+      <div className="flex p-10 mb-10 flex-col gap-4 overflow-scroll">
         {chat.map((message, i) => {
           return (
             <div
               key={i}
-              className={` border-[#999999] break-words border-2 rounded-xl self-end px-3 py-3 max-w-[80%] ${
+              className={` border-[#999999] break-words bg-[#e1d0b3] border-2 rounded-xl self-end px-3 py-3 max-w-[80%] ${
                 message.isHuman === false &&
-                "bg-white bg-opacity-40 backdrop-blur-lg dropshadow-md mr-auto"
+                "bg-transparent bg-opacity-40  backdrop-blur-lg dropshadow-md mr-auto"
               }`}
             >
               <pre className="whitespace-pre-wrap">
@@ -63,18 +69,24 @@ const Chat = ({}) => {
           );
         })}
       </div>
-      <div className="absolute bottom-0 right-0 w-full flex">
-        <textarea
+      <div className="relative bottom-0">
+        <TextareaAutosize
+          placeholder="Type something..."
+          multiline
+          maxRows={10}
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="w-full border-[2px] "
-        ></textarea>
-        <button
-          onClick={() => sendMessage({ message: value, isHuman: true })}
-          className="border-[2px]"
+          className="z-10 border-4 border-[#e1d0b3] p-3 pr-12 hover:border-[#e1d0b3] outline-[#c0964e] fixed bottom-0 md:w-[calc(100%-240px)]  w-full 	 "
+        />
+        <Button
+          onClick={() => {
+            sendMessage({ message: value, isHuman: true });
+            setValue("");
+          }}
+          className="fixed z-20 right-0 bottom-[8px]"
         >
-          submit
-        </button>
+          <Send />
+        </Button>
       </div>
     </div>
   );

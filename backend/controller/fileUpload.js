@@ -366,7 +366,14 @@ exports.sendMessage = async (req, res) => {
         },
       }
     );
-    const model = new OpenAI({ modelName: "gpt-3.5-turbo" });
+    const model = new OpenAI({
+      modelName: "gpt-3.5-turbo",
+      temperature: 0.8,
+      maxTokens: 256,
+      topP: 1,
+      frequencyPenalty: 0,
+      presencePenalty: 0,
+    });
 
     const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever(1), {
       returnSourceDocuments: true,
