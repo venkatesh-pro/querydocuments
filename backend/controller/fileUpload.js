@@ -615,6 +615,9 @@ exports.razorpayWebhook = async (request, response) => {
         const currentDate = Math.floor(Date.now() / 1000);
         const expiryDate = currentDate + 30 * 24 * 60 * 60;
 
+        console.log({ currentDate });
+        console.log({ expiryDate });
+
         user.paidPlanUsageData.expiry = expiryDate;
 
         await user.save();
