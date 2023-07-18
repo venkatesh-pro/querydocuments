@@ -46,14 +46,18 @@ function ResponsiveDrawer(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   const getAllUploads = async () => {
-    const { data } = await getAllUploadsFunction(auth.token);
-    setAllUploads(data);
+    try {
+      const { data } = await getAllUploadsFunction(auth.token);
+      setAllUploads(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
   useEffect(() => {
     if (auth?.token) {
       getAllUploads();
     }
-  }, [auth]);
+  }, [auth, router.query.id]);
   return (
     <>
       <HeaderChatPage />

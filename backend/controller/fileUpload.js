@@ -8,8 +8,13 @@ const { PineconeStore } = require("langchain/vectorstores");
 const { OpenAIEmbeddings } = require("langchain/embeddings");
 const FileUpload = require("../model/fileUpload");
 const FileQuery = require("../model/fileQuery");
-const { RetrievalQAChain } = require("langchain/chains");
+const {
+  RetrievalQAChain,
+  ConversationalRetrievalQAChain,
+} = require("langchain/chains");
 const { OpenAI } = require("langchain/llms");
+const { ChatOpenAI } = require("langchain/chat_models/openai");
+
 const Razorpay = require("razorpay");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { planFeature } = require("../constant");
@@ -366,7 +371,7 @@ exports.sendMessage = async (req, res) => {
         },
       }
     );
-    const model = new OpenAI({
+    const model = new ChatOpenAI({
       modelName: "gpt-3.5-turbo",
       temperature: 0.8,
       maxTokens: 256,

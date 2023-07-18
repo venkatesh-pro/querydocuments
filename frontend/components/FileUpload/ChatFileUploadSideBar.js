@@ -22,7 +22,7 @@ const ChatFileUploadSideBar = () => {
         const { data } = await fileUploadFunction(auth.token, formData);
 
         console.log(data);
-        if (data) router.push(`chat/${data}`);
+        if (data) router.push(`/chat/${data}`);
       } catch (error) {
         console.log(error);
       }

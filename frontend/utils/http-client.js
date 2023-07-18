@@ -32,7 +32,7 @@ api.interceptors.response.use(
   async function (error) {
     console.log("ERROR ...>>>>>>>>>>>>>>>>......>>>>>...", error);
     const prevRequest = error.config;
-    if (error.response.status === 401 && !prevRequest.__isRetryRequest) {
+    if (error.response.status === 401) {
       prevRequest.__isRetryRequest = true;
       // refresh token get
 
