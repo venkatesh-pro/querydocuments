@@ -128,9 +128,13 @@ const freeUsageUpload = async (file, user) => {
     const updatedFreeUsageUser = await User.findByIdAndUpdate(
       user._id,
       {
-        freePlanUsageData: {
-          todayDate,
-          totalFileUsed: 0,
+        // freePlanUsageData: {
+        //   todayDate,
+        //   totalFileUsed: 0,
+        // },
+        $set: {
+          "freePlanUsageData.todayDate": todayDate,
+          "freePlanUsageData.totalFileUsed": 0,
         },
       },
       {
@@ -168,9 +172,13 @@ const paidUsageUpload = async (file, user, planFeature) => {
     const updatedPaidUsageUser = await User.findByIdAndUpdate(
       user._id,
       {
-        paidPlanUsageData: {
-          todayDate,
-          totalFileUsed: 0,
+        // paidPlanUsageData: {
+        //   todayDate,
+        //   totalFileUsed: 0,
+        // },
+        $set: {
+          "paidPlanUsageData.todayDate": todayDate,
+          "paidPlanUsageData.totalFileUsed": 0,
         },
       },
       {
@@ -350,20 +358,14 @@ exports.uploadFile = async (req, res) => {
 
 // query pinecone
 
-exports.sendMessage = async (req, res) => {
+const queryPineConeFunctionFree = async (message, fileId, user) => {
   try {
-    const { email } = req.user;
-
-    const user = await User.findOne({ email }).select("_id");
-    console.log(user);
-
     await FileQuery.create({
       userId: user._id,
-      fileId: req.body.fileId,
-      message: req.body.message,
+      fileId: fileId,
+      message: message,
       isHuman: true,
     });
-
     // query the pinecone
     const vectorStore = await PineconeStore.fromExistingIndex(
       new OpenAIEmbeddings(),
@@ -371,13 +373,14 @@ exports.sendMessage = async (req, res) => {
         pineconeIndex,
         filter: {
           userId: user._id.toString(),
-          fileId: req.body.fileId,
+          fileId: fileId,
         },
       }
     );
+
     const model = new ChatOpenAI({
       modelName: "gpt-3.5-turbo",
-      temperature: 0.8,
+      temperature: 0.6,
       maxTokens: 256,
       topP: 1,
       frequencyPenalty: 0,
@@ -387,23 +390,239 @@ exports.sendMessage = async (req, res) => {
     const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever(1), {
       returnSourceDocuments: true,
     });
-    const response = await chain.call({
-      query: req.body.message,
-    });
 
-    console.log(response);
+    const chainRes = await chain.call({
+      query: message,
+    });
 
     const createdAI = await FileQuery.create({
       userId: user._id,
-      fileId: req.body.fileId,
-      message: response.text,
+      fileId: fileId,
+      message: chainRes.text,
       isHuman: false,
     });
-    res.json(createdAI);
+    // Increment the totalQuestionsAsked count
+
+    console.log(user);
+    user.freePlanUsageData.totalQuestionsAsked += 1;
+    await user.save();
+
+    return createdAI;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Upload Failed");
+  }
+};
+const freeUsageQuery = async (message, fileId, user) => {
+  // we are getting today date , so we can limit as per the day, per day 2 times  for example
+  const todayDate = new Date().getDate(); //for example today is 12
+  console.log(todayDate);
+
+  // if todayDate and user saved date is today, we are using today, else we will reset to totalFileUser:0, so user can continue uploading
+  if (todayDate === user.freePlanUsageData.todayDate) {
+    if (
+      user.freePlanUsageData.totalQuestionsAsked <
+      planFeature["free"].maxQuestionsAskedPerDay
+    ) {
+      const response = await queryPineConeFunctionFree(message, fileId, user);
+      return response;
+    } else {
+      throw new Error("Limit Execeded");
+    }
+  } else {
+    const updatedFreeUsageUser = await User.findByIdAndUpdate(
+      user._id,
+      {
+        // freePlanUsageData: {
+        //   todayDate,
+        //   totalQuestionsAsked: 0,
+        // },
+        $set: {
+          "freePlanUsageData.todayDate": todayDate,
+          "freePlanUsageData.totalQuestionsAsked": 0,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    console.log("updated", updatedFreeUsageUser);
+    if (
+      updatedFreeUsageUser.freePlanUsageData.totalQuestionsAsked <
+      planFeature["free"].maxQuestionsAskedPerDay
+    ) {
+      const response = await queryPineConeFunctionFree(
+        message,
+        fileId,
+        updatedFreeUsageUser
+      );
+      return response;
+    } else {
+      throw new Error("Limit Execeded");
+    }
+  }
+};
+const queryPineConeFunctionPaid = async (message, fileId, user) => {
+  try {
+    await FileQuery.create({
+      userId: user._id,
+      fileId: fileId,
+      message: message,
+      isHuman: true,
+    });
+    // query the pinecone
+    const vectorStore = await PineconeStore.fromExistingIndex(
+      new OpenAIEmbeddings(),
+      {
+        pineconeIndex,
+        filter: {
+          userId: user._id.toString(),
+          fileId: fileId,
+        },
+      }
+    );
+
+    const model = new ChatOpenAI({
+      modelName: "gpt-3.5-turbo",
+      temperature: 0.6,
+      maxTokens: 256,
+      topP: 1,
+      frequencyPenalty: 0,
+      presencePenalty: 0,
+    });
+
+    const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever(1), {
+      returnSourceDocuments: true,
+    });
+
+    const chainRes = await chain.call({
+      query: message,
+    });
+
+    const createdAI = await FileQuery.create({
+      userId: user._id,
+      fileId: fileId,
+      message: chainRes.text,
+      isHuman: false,
+    });
+    // Increment the totalQuestionsAsked count
+
+    console.log(user);
+
+    user.paidPlanUsageData.totalQuestionsAsked += 1;
+    await user.save();
+
+    return createdAI;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Upload Failed");
+  }
+};
+const paidUsageQuery = async (message, fileId, user, planFeature) => {
+  // we are getting today date , so we can limit as per the day, per day 2 times  for example
+  const todayDate = new Date().getDate(); //for example today is 12
+  console.log(todayDate);
+
+  // if todayDate and user saved date is today, we are using today, else we will reset to totalFileUser:0, so user can continue uploading
+  if (todayDate == user.paidPlanUsageData.todayDate) {
+    if (
+      user.paidPlanUsageData.totalQuestionsAsked <
+      planFeature.maxQuestionsAskedPerDay
+    ) {
+      const response = await queryPineConeFunctionPaid(message, fileId, user);
+      return response;
+    } else {
+      throw new Error("Limit Execeded");
+    }
+  } else {
+    const updatedPaidUsageUser = await User.findByIdAndUpdate(
+      user._id,
+      {
+        $set: {
+          "paidPlanUsageData.todayDate": todayDate,
+          "paidPlanUsageData.totalQuestionsAsked": 0,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    if (
+      updatedPaidUsageUser.paidPlanUsageData.totalQuestionsAsked <
+      planFeature.maxQuestionsAskedPerDay
+    ) {
+      const response = await queryPineConeFunctionPaid(
+        message,
+        fileId,
+        updatedPaidUsageUser
+      );
+      return response;
+    } else {
+      throw new Error("Limit Execeded");
+    }
+  }
+};
+
+exports.sendMessage = async (req, res) => {
+  try {
+    const { email } = req.user;
+    const { message, fileId } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (user.isStripe === true || user.isRazorpay === true) {
+      // continue
+      const isExpired =
+        user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+
+      console.log({ isExpired });
+
+      // if active then continue to paid else free
+      if (isExpired) {
+        // need to check for which plan user subscribed , [free, basic, pro]
+        if (user.plan === "basic") {
+          // basic plan
+
+          const response = await paidUsageQuery(
+            message,
+            fileId,
+            user,
+            planFeature["basic"]
+          );
+          console.log("success basic");
+          return res.json(response);
+        } else if (user.plan === "pro") {
+          // pro plan
+
+          const response = await paidUsageQuery(
+            message,
+            fileId,
+            user,
+            planFeature["pro"]
+          );
+          console.log("success pro");
+
+          return res.json(response);
+        }
+      } else {
+        // free plan
+        const response = await freeUsageQuery(message, fileId, user);
+        console.log("success free");
+
+        return res.json(response);
+      }
+    } else {
+      // free plan
+      const response = await freeUsageQuery(message, fileId, user);
+      console.log("success free");
+
+      return res.json(response);
+    }
   } catch (error) {
     console.log(error);
     res.status(400).json({
-      error: "Fetch Failed",
+      error: error.message,
     });
   }
 };

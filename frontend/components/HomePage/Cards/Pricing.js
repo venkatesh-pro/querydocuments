@@ -48,7 +48,7 @@ const PricingCard = ({ info }) => {
           </Typography>
         </div>
         <div className="mt-20">
-          {auth?.plan.toLocaleLowerCase() === info.plan.toLocaleLowerCase() ? (
+          {auth?.plan?.toLocaleLowerCase() === info.plan.toLocaleLowerCase() ? (
             <button className="w-full cursor-default bg-black p-2 rounded-xl text-white">
               Current Plan
             </button>
