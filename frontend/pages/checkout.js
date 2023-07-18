@@ -102,6 +102,26 @@ const checkout = () => {
       ? setPlanChoosen(sessionStorage.getItem("selectedPlan"))
       : setPlanChoosen("pro");
   }, []);
+
+  const handleCancelSubscription = async () => {
+    try {
+      console.log("clicked");
+      // post for security reason
+      const { data } = await api.post(
+        `http://localhost:5000/api/cancelSubscribe`,
+        {},
+        {
+          headers: {
+            authToken: auth.token,
+          },
+        }
+      );
+
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <Head>

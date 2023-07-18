@@ -286,6 +286,10 @@ exports.uploadFile = async (req, res) => {
       } else if (user.isRazorpay) {
         // need to check for razorpay is plan is active or not
         // isActive =
+        const subData = await instance.subscriptions.fetch(
+          user.razorpaySubscriptionId
+        );
+        isActive = subData.status === "active" ? "active" : "inactive";
       }
 
       // we check this for if user cancel inbetween before the subscription expired
@@ -647,8 +651,10 @@ exports.whichplan = async (req, res) => {
         isActive =
           subscriptions?.data[0].status === "active" ? "active" : "inactive";
       } else if (user.isRazorpay) {
-        // need to check for razorpay is plan is active or not
-        // isActive =
+        const subData = await instance.subscriptions.fetch(
+          user.razorpaySubscriptionId
+        );
+        isActive = subData.status === "active" ? "active" : "inactive";
       }
 
       // if active then continue to paid else free
@@ -683,6 +689,13 @@ exports.cancelSubsciption = async (req, res) => {
       const deleted = await stripe.subscriptions.cancel(
         user.stripeSubscriptionId
       );
+      console.log(deleted);
+      res.json("success");
+    } else if (user.isRazorpay) {
+      const deleted = await instance.subscriptions.cancel(
+        user.razorpaySubscriptionId
+      );
+
       console.log(deleted);
       res.json("success");
     }
