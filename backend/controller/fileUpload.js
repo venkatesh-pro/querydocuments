@@ -960,7 +960,10 @@ exports.whichplan = async (req, res) => {
       return res.json("free");
     }
   } catch (error) {
-    console.log(error);
+    console.log("error", error);
+    res
+      .status(400)
+      .json(error.message ? error.message : "some thing went wrong");
   }
 };
 exports.cancelSubsciption = async (req, res) => {
@@ -972,13 +975,17 @@ exports.cancelSubsciption = async (req, res) => {
       const deleted = await stripe.subscriptions.cancel(
         user.stripeSubscriptionId
       );
+
+      user.plan = "free";
+      user.save();
       console.log(deleted);
       res.json("success");
     } else if (user.isRazorpay) {
       const deleted = await instance.subscriptions.cancel(
         user.razorpaySubscriptionId
       );
-
+      user.plan = "free";
+      user.save();
       console.log(deleted);
       res.json("success");
     }

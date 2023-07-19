@@ -103,25 +103,6 @@ const checkout = () => {
       : setPlanChoosen("pro");
   }, []);
 
-  const handleCancelSubscription = async () => {
-    try {
-      console.log("clicked");
-      // post for security reason
-      const { data } = await api.post(
-        `http://localhost:5000/api/cancelSubscribe`,
-        {},
-        {
-          headers: {
-            authToken: auth.token,
-          },
-        }
-      );
-
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <>
       <Head>
@@ -218,48 +199,3 @@ const checkout = () => {
 };
 
 export default checkout;
-
-/*
-
-  const whichplanFunction = async () => {
-    try {
-      const { data } = await api.get(`http://localhost:5000/api/whichplan`, {
-        headers: {
-          authToken: auth.token,
-        },
-      });
-      console.log(data);
-
-      setPlanFromDb(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    if (auth?.token) {
-      whichplanFunction();
-    }
-  }, [auth]);
-
-  const handleCancelSubscription = async () => {
-    try {
-      console.log("clicked");
-      // post for security reason
-      const { data } = await api.post(
-        `http://localhost:5000/api/cancelSubscribe`,
-        {},
-        {
-          headers: {
-            authToken: auth.token,
-          },
-        }
-      );
-
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-
-  */

@@ -148,13 +148,15 @@ const Header = () => {
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
-          <MenuItem onClick={handleClose}>
-            <Avatar
-              sx={{ width: 42, height: 42 }}
-              alt={auth?.name}
-              src={auth?.picture}
-            />
-            My account
+          <MenuItem>
+            <Link href={"/account"} className="flex">
+              <Avatar
+                sx={{ width: 42, height: 42 }}
+                alt={auth?.name}
+                src={auth?.picture}
+              />
+              My account
+            </Link>
           </MenuItem>
           <Divider />
 
