@@ -53,6 +53,7 @@ api.interceptors.response.use(
 
         return axios(prevRequest);
       } catch (e) {
+        console.log("error in catch", e);
         return Promise.reject(error);
       }
     } else {

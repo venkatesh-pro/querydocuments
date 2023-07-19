@@ -1,6 +1,6 @@
 exports.validateFile = async (req, res, next) => {
   try {
-    console.log(req.files);
+    // console.log(req.files);
     const mimetype = req.files.file.mimetype;
 
     if (

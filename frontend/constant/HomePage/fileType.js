@@ -1,1 +1,1 @@
-export const fileTypes = ["pdf", "doc", "docx"];
+export const fileTypes = ["pdf", "doc", "docx", "epub",'ppt','pptx'];

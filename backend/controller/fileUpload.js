@@ -2,6 +2,7 @@ const User = require("../model/auth");
 const AWS = require("aws-sdk");
 const { v4: uuidv4 } = require("uuid");
 const pdfParse = require("pdf-parse");
+const textract = require("textract");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { PineconeClient } = require("@pinecone-database/pinecone");
 const { PineconeStore } = require("langchain/vectorstores");
@@ -65,13 +66,13 @@ const awsConfig = {
 const s3 = new AWS.S3(awsConfig);
 
 // functions
-const uploadS3AndPineConeFunctionFree = async (file, user) => {
+const uploadS3AndPineConeFunctionFree = async (file, user, maximumPage) => {
   try {
     const fileName = file.name;
     const parts = fileName.split(".");
     const extension = parts[parts.length - 1];
     if (file.mimetype === "application/pdf") {
-      const text = await processPdf(file);
+      const text = await processPdf(file, maximumPage);
       const fileUploadId = await processStoring(file, text, user);
       // Increment the totalFileUsed count
       user.freePlanUsageData.totalFileUsed += 1;
@@ -79,20 +80,27 @@ const uploadS3AndPineConeFunctionFree = async (file, user) => {
 
       return fileUploadId;
     } else {
-      throw new Error("invalid file type");
+      const text = await processOtherDocs(file, maximumPage);
+      const fileUploadId = await processStoring(file, text, user);
+      // Increment the totalFileUsed count
+      user.freePlanUsageData.totalFileUsed += 1;
+      await user.save();
+
+      return fileUploadId;
+      // throw new Error("invalid file type");
     }
   } catch (error) {
     console.log(error);
-    throw new Error("Upload Failed");
+    throw new Error(error.message);
   }
 };
-const uploadS3AndPineConeFunctionPaid = async (file, user) => {
+const uploadS3AndPineConeFunctionPaid = async (file, user, maximumPage) => {
   try {
     const fileName = file.name;
     const parts = fileName.split(".");
     const extension = parts[parts.length - 1];
     if (file.mimetype === "application/pdf") {
-      const text = await processPdf(file);
+      const text = await processPdf(file, maximumPage);
       const fileUploadId = await processStoring(file, text, user);
 
       // Increment the totalFileUsed count
@@ -101,11 +109,18 @@ const uploadS3AndPineConeFunctionPaid = async (file, user) => {
 
       return fileUploadId;
     } else {
-      throw new Error("invalid file type");
+      const text = await processOtherDocs(file, maximumPage);
+      const fileUploadId = await processStoring(file, text, user);
+      // Increment the totalFileUsed count
+      user.freePlanUsageData.totalFileUsed += 1;
+      await user.save();
+
+      return fileUploadId;
+      // throw new Error("invalid file type");
     }
   } catch (error) {
     console.log(error);
-    throw new Error("Upload Failed");
+    throw new Error(error.message);
   }
 };
 const freeUsageUpload = async (file, user) => {
@@ -119,7 +134,11 @@ const freeUsageUpload = async (file, user) => {
       user.freePlanUsageData.totalFileUsed <
       planFeature["free"].maxFileUsedPerDay
     ) {
-      const fileUploadId = await uploadS3AndPineConeFunctionFree(file, user);
+      const fileUploadId = await uploadS3AndPineConeFunctionFree(
+        file,
+        user,
+        planFeature["free"].maximumPage
+      );
       return fileUploadId;
     } else {
       throw new Error("Limit Execeded");
@@ -147,7 +166,8 @@ const freeUsageUpload = async (file, user) => {
     ) {
       const fileUploadId = await uploadS3AndPineConeFunctionFree(
         file,
-        updatedFreeUsageUser
+        updatedFreeUsageUser,
+        planFeature["free"].maximumPage
       );
       return fileUploadId;
     } else {
@@ -163,7 +183,11 @@ const paidUsageUpload = async (file, user, planFeature) => {
   // if todayDate and user saved date is today, we are using today, else we will reset to totalFileUser:0, so user can continue uploading
   if (todayDate == user.paidPlanUsageData.todayDate) {
     if (user.paidPlanUsageData.totalFileUsed < planFeature.maxFileUsedPerDay) {
-      const fileUploadId = await uploadS3AndPineConeFunctionPaid(file, user);
+      const fileUploadId = await uploadS3AndPineConeFunctionPaid(
+        file,
+        user,
+        planFeature.maximumPage
+      );
       return fileUploadId;
     } else {
       throw new Error("Limit Execeded");
@@ -191,7 +215,8 @@ const paidUsageUpload = async (file, user, planFeature) => {
     ) {
       const fileUploadId = await uploadS3AndPineConeFunctionPaid(
         file,
-        updatedPaidUsageUser
+        updatedPaidUsageUser,
+        planFeature.maximumPage
       );
       return fileUploadId;
     } else {
@@ -259,16 +284,52 @@ const processStoring = async (file, text, userData) => {
     throw new Error("File Upload Failed");
   }
 };
-const processPdf = async (file) => {
+const processPdf = async (file, maximumPage) => {
   const data = await pdfParse(file);
-  return data.text;
+  if (data.numpages <= maximumPage) {
+    return data.text;
+  } else {
+    throw new Error(`Your limit is upto ${maximumPage} pages`);
+  }
 };
-const processOtherDocs = async (file) => {};
+const processOtherDocs = async (file, maximumPage) => {
+  try {
+    console.log("other docs");
+    const extractText = () => {
+      return new Promise((resolve, reject) => {
+        textract.fromBufferWithMime(file.mimetype, file.data, (error, text) => {
+          if (error) {
+            console.log("error2", error);
+            reject(new Error("Invalid File Type"));
+          } else {
+            resolve(text);
+          }
+        });
+      });
+    };
+
+    const text = await extractText();
+
+    const averageCharsPerPage = 2000; // Adjust as needed for your document
+    const pageCount = Math.ceil(text.length / averageCharsPerPage);
+
+    console.log({ pageCount });
+
+    if (pageCount <= maximumPage) {
+      return text;
+    } else {
+      throw new Error(`Your limit is upto ${maximumPage} pages`);
+    }
+  } catch (error) {
+    console.log("error1", error);
+    throw new Error(error.message);
+  }
+};
 
 exports.uploadFile = async (req, res) => {
   try {
     const { email } = req.user;
-
+    console.log(email);
     const user = await User.findOne({ email });
 
     if (user.isStripe === true || user.isRazorpay === true) {
@@ -351,7 +412,7 @@ exports.uploadFile = async (req, res) => {
     console.log(error.message);
 
     res.status(400).json({
-      error: error.message,
+      error: error.message ? error.message : "Something Went Wrong",
     });
   }
 };
