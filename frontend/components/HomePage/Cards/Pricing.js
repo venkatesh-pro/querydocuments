@@ -52,6 +52,13 @@ const PricingCard = ({ info }) => {
             <button className="w-full cursor-default bg-black p-2 rounded-xl text-white">
               Current Plan
             </button>
+          ) : info.plan.toLocaleLowerCase() == "free" ? (
+            <button
+              disabled
+              className="w-full block text-center bg-black p-2 rounded-xl text-white"
+            >
+              Default
+            </button>
           ) : (
             <button
               onClick={() => {
