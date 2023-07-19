@@ -6,7 +6,7 @@ import PricingCard from "./Cards/Pricing";
 import MobileViewPricingCard from "./Cards/MobileViewPricing";
 import { pricingInfo } from "../../constant/HomePage/Pricing";
 
-const Pricing = ({ fileTypes, handleUploadFile }) => {
+const Pricing = ({ planFromDb }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
 
   return (
@@ -18,14 +18,17 @@ const Pricing = ({ fileTypes, handleUploadFile }) => {
       {isDesktop && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3 mt-16">
           {pricingInfo.map((info) => {
-            return <PricingCard info={info} />;
+            return <PricingCard info={info} planFromDb={planFromDb} />;
           })}
         </div>
       )}
 
       {!isDesktop && (
         <div className="mt-16">
-          <MobileViewPricingCard pricingInfo={pricingInfo} />
+          <MobileViewPricingCard
+            pricingInfo={pricingInfo}
+            planFromDb={planFromDb}
+          />
         </div>
       )}
     </div>

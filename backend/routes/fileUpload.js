@@ -1,5 +1,14 @@
 const express = require("express");
-const { uploadFile, sendMessage, razorpayWebhook, webhook, cancelSubsciption, whichplan, subscribeRazorpay, subscribeStripe } = require("../controller/fileUpload.js");
+const {
+  uploadFile,
+  sendMessage,
+  razorpayWebhook,
+  webhook,
+  cancelSubsciption,
+  whichplan,
+  subscribeRazorpay,
+  subscribeStripe,
+} = require("../controller/fileUpload.js");
 const { authCheck } = require("../middleware/auth");
 const fileUpload = require("express-fileupload");
 const { validateFile } = require("../middleware/fileUpload.js");

@@ -38,7 +38,7 @@ CustomTabPanel.propTypes = {
   index: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
 };
-const MobileViewPricingCard = ({ pricingInfo }) => {
+const MobileViewPricingCard = ({ pricingInfo, planFromDb }) => {
   const [value, setValue] = React.useState(2);
 
   const { auth } = useSelector((state) => ({ ...state }));

@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-const PricingCard = ({ info }) => {
+const PricingCard = ({ info, planFromDb }) => {
   const { auth } = useSelector((state) => ({ ...state }));
 
   const router = useRouter();
@@ -48,7 +48,7 @@ const PricingCard = ({ info }) => {
           </Typography>
         </div>
         <div className="mt-20">
-          {auth?.plan?.toLocaleLowerCase() === info.plan.toLocaleLowerCase() ? (
+          {planFromDb?.toLocaleLowerCase() === info.plan.toLocaleLowerCase() ? (
             <button className="w-full cursor-default bg-black p-2 rounded-xl text-white">
               Current Plan
             </button>
