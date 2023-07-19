@@ -337,39 +337,39 @@ exports.uploadFile = async (req, res) => {
       // before uploading need to check use is status is active or not
       let isActive;
 
-      if (user.isStripe) {
-        const subscriptions = await stripe.subscriptions.list(
-          {
-            customer: user.stripeCustomerId,
-            status: "all",
-            expand: ["data.default_payment_method"],
-          },
-          {
-            apiKey: process.env.STRIPE_SECRET_KEY,
-          }
-        );
+      // if (user.isStripe) {
+      //   const subscriptions = await stripe.subscriptions.list(
+      //     {
+      //       customer: user.stripeCustomerId,
+      //       status: "all",
+      //       expand: ["data.default_payment_method"],
+      //     },
+      //     {
+      //       apiKey: process.env.STRIPE_SECRET_KEY,
+      //     }
+      //   );
 
-        console.log(subscriptions);
-        isActive =
-          subscriptions?.data[0].status === "active" ? "active" : "inactive";
-      } else if (user.isRazorpay) {
-        // need to check for razorpay is plan is active or not
-        // isActive =
-        const subData = await instance.subscriptions.fetch(
-          user.razorpaySubscriptionId
-        );
-        isActive = subData.status === "active" ? "active" : "inactive";
-      }
+      //   console.log(subscriptions);
+      //   isActive =
+      //     subscriptions?.data[0].status === "active" ? "active" : "inactive";
+      // } else if (user.isRazorpay) {
+      //   // need to check for razorpay is plan is active or not
+      //   // isActive =
+      //   const subData = await instance.subscriptions.fetch(
+      //     user.razorpaySubscriptionId
+      //   );
+      //   isActive = subData.status === "active" ? "active" : "inactive";
+      // }
 
       // we check this for if user cancel inbetween before the subscription expired
       const isExpired =
         user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
 
       console.log({ isExpired });
-      console.log({ isActive });
+      // console.log({ isActive });
 
       // if active then continue to paid else free
-      if (isActive === "active" || isExpired) {
+      if (isExpired) {
         // need to check for which plan user subscribed , [free, basic, pro]
         if (user.plan === "basic") {
           // basic plan
@@ -919,30 +919,34 @@ exports.whichplan = async (req, res) => {
     if (user.isStripe === true || user.isRazorpay === true) {
       // continue
       // before uploading need to check use is status is active or not
-      let isActive;
-      if (user.isStripe) {
-        const subscriptions = await stripe.subscriptions.list(
-          {
-            customer: user.stripeCustomerId,
-            status: "all",
-            expand: ["data.default_payment_method"],
-          },
-          {
-            apiKey: process.env.STRIPE_SECRET_KEY,
-          }
-        );
-        isActive =
-          subscriptions?.data[0].status === "active" ? "active" : "inactive";
-      } else if (user.isRazorpay) {
-        const subData = await instance.subscriptions.fetch(
-          user.razorpaySubscriptionId
-        );
-        isActive = subData.status === "active" ? "active" : "inactive";
-      }
+      // let isActive;
+      // if (user.isStripe) {
+      //   const subscriptions = await stripe.subscriptions.list(
+      //     {
+      //       customer: user.stripeCustomerId,
+      //       status: "all",
+      //       expand: ["data.default_payment_method"],
+      //     },
+      //     {
+      //       apiKey: process.env.STRIPE_SECRET_KEY,
+      //     }
+      //   );
+      //   isActive =
+      //     subscriptions?.data[0].status === "active" ? "active" : "inactive";
+      // } else if (user.isRazorpay) {
+      //   const subData = await instance.subscriptions.fetch(
+      //     user.razorpaySubscriptionId
+      //   );
+      //   isActive = subData.status === "active" ? "active" : "inactive";
+      // }
 
       // if active then continue to paid else free
+      const isExpired =
+        user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
 
-      if (isActive === "active") {
+      console.log({ isExpired });
+
+      if (isExpired) {
         // need to check for which plan user subscribed , [free, basic, pro]
         if (user.plan === "basic") {
           // basic plan
