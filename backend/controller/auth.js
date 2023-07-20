@@ -1,5 +1,7 @@
 const User = require("../model/auth");
 const TempUser = require("../model/tempUser");
+const geoip = require("geoip-lite");
+
 const client = require("twilio")(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
@@ -94,6 +96,26 @@ exports.login = async (req, res) => {
       });
     }
   } catch (error) {
+    res.status(400).json({
+      error: "Something went wrong.Please try again",
+    });
+  }
+};
+
+exports.getCountry = async (req, res) => {
+  try {
+    const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+
+    console.log(ip);
+    const country = geoip.lookup(ip)?.country;
+
+    if (country) {
+      res.json(country);
+    } else {
+      res.json("UNKNOWN");
+    }
+  } catch (error) {
+    console.log(error);
     res.status(400).json({
       error: "Something went wrong.Please try again",
     });

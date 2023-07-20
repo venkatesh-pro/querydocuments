@@ -20,6 +20,10 @@ const userSchema = mongoose.Schema(
     countryCode: {
       type: String,
     },
+    // didn't added the feature, i need to save by ip address
+    country: {
+      type: String,
+    },
     user_id: {
       type: String,
       required: true,
