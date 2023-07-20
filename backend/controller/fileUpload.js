@@ -721,8 +721,8 @@ exports.subscribeStripe = async (req, res) => {
         ],
         // allow_promotion_codes: true,
 
-        success_url: "http://localhost:3000/",
-        cancel_url: "http://localhost:3000/checkout",
+        success_url: process.env.PAYMENT_SUCCESS_URL,
+        cancel_url: process.env.PAYMENT_CANCEL_URL,
       },
       {
         apiKey: process.env.STRIPE_SECRET_KEY,
@@ -765,6 +765,11 @@ exports.subscribeRazorpay = async (req, res) => {
     user.razorpayCustomerId = customerId;
     user.razorpaySubscriptionId = subscription.id;
     user.save();
+
+    // just to send the user phonenumber and email to react to autofill in razorpay pop up
+    subscription.phoneNumber = user.phoneNumber;
+    subscription.email = user.email;
+    subscription.countryCode = user.countryCode;
 
     console.log(subscription);
     res.json(subscription);

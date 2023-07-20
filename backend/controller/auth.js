@@ -56,6 +56,8 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
           name: name,
           picture,
           user_id,
+          phoneNumber,
+          countryCode,
         });
 
         await TempUser.deleteOne({ email, phoneNumber });

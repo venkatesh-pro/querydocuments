@@ -64,7 +64,7 @@ const checkout = () => {
         }
       );
 
-      console.log(data);
+      console.log("data", data);
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_PUBLIC_KEY,
@@ -74,15 +74,23 @@ const checkout = () => {
         // image: "/your_logo.jpg",
         handler: function (response) {
           console.log(response);
+          if (
+            response.razorpay_payment_id &&
+            response.razorpay_subscription_id &&
+            response.razorpay_signature
+          ) {
+            router.push("/success");
+          } else {
+            router.push("/failed");
+          }
           // alert(response.razorpay_payment_id),
           //   alert(response.razorpay_subscription_id),
           //   alert(response.razorpay_signature);
         },
-        // prefill: {
-        //   name: "Gaurav Kumar",
-        //   email: "gaurav.kumar@example.com",
-        //   contact: "+919876543210",
-        // },
+        prefill: {
+          email: data.email,
+          contact: `${data.countryCode}${data.phoneNumber}`,
+        },
         // notes: {
         //   note_key_1: "Tea. Earl Grey. Hot",
         //   note_key_2: "Make it so.",

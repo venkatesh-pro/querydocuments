@@ -113,10 +113,17 @@ const MobileViewPricingCard = ({ pricingInfo, planFromDb }) => {
                 </Typography>
               </div>
               <div className="mt-16">
-                {auth?.plan.toLocaleLowerCase() ===
+                {planFromDb?.toLocaleLowerCase() ===
                 info.plan.toLocaleLowerCase() ? (
                   <button className="w-full cursor-default bg-black p-2 rounded-xl text-white">
                     Current Plan
+                  </button>
+                ) : info.plan.toLocaleLowerCase() == "free" ? (
+                  <button
+                    disabled
+                    className="w-full block text-center bg-black p-2 rounded-xl text-white"
+                  >
+                    Default
                   </button>
                 ) : (
                   <button
