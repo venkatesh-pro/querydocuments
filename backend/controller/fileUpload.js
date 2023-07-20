@@ -800,8 +800,10 @@ exports.webhook = async (request, response) => {
 
         if (invoicePaid.amount_paid === 20000) {
           user.plan = "basic";
+          user.planForUI = "basic";
         } else if (invoicePaid.amount_paid === 100000) {
           user.plan = "pro";
+          user.planForUI = "pro";
         }
         user.isRazorpay = false;
         user.isStripe = true;
@@ -872,8 +874,10 @@ exports.razorpayWebhook = async (request, response) => {
       if (user) {
         if (event.payload.payment.entity.amount === 20000) {
           user.plan = "basic";
+          user.planForUI = "basic";
         } else if (event.payload.payment.entity.amount === 100000) {
           user.plan = "pro";
+          user.planForUI = "pro";
         }
 
         user.isRazorpay = true;
@@ -948,12 +952,14 @@ exports.whichplan = async (req, res) => {
 
       if (isExpired) {
         // need to check for which plan user subscribed , [free, basic, pro]
-        if (user.plan === "basic") {
+        if (user.planForUI === "basic") {
           // basic plan
           return res.json("basic");
-        } else if (user.plan === "pro") {
+        } else if (user.planForUI === "pro") {
           // pro plan
           return res.json("pro");
+        } else {
+          return res.json("free");
         }
       } else {
         // free plan
@@ -980,7 +986,7 @@ exports.cancelSubsciption = async (req, res) => {
         user.stripeSubscriptionId
       );
 
-      user.plan = "free";
+      user.planForUI = "free";
       user.save();
       console.log(deleted);
       res.json("success");
@@ -988,7 +994,7 @@ exports.cancelSubsciption = async (req, res) => {
       const deleted = await instance.subscriptions.cancel(
         user.razorpaySubscriptionId
       );
-      user.plan = "free";
+      user.planForUI = "free";
       user.save();
       console.log(deleted);
       res.json("success");

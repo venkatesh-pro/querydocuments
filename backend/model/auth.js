@@ -43,7 +43,16 @@ const userSchema = mongoose.Schema(
     isRazorpay: {
       type: Boolean,
     },
+    // if i change the plan to free while cancel subscription we face one problem that is in upload or query, if exipiry data is not expired, we are checking only pro plan or basic, we are not checking free, because, if user cancelled inbetween the expiry, they paid money, so they need to use the paid plan until the expiry, so i am going to create another plan property for ui display in react that is planForUI
     plan: {
+      type: String,
+      default: "free",
+      required: true,
+      enum: ["free", "basic", "pro"],
+    },
+
+    // planForUI only change for cancel sub, not plan, it will take care by webhook
+    planForUI: {
       type: String,
       default: "free",
       required: true,
