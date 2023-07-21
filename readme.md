@@ -6,8 +6,8 @@
 5. file upload progress
 <!-- final -->
 6. already have the country check api and implemented, using that need to change the current inr or dollar
-7. razorpay and stripe webhook security
-
+7. only One phonenumber
+8. razorpay and stripe webhook security
    <!-- 6. intimate after payment success or failure -->
    <!-- 7. intimate after cancel payment -->
       <!-- 6. if subscribed we need to update the localstorage plan : '' -->

@@ -54,6 +54,12 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
       if (phoneOtp === user.phoneOtp) {
         // create user
 
+        const isAlredyUser = await User.findOne({ email });
+        if (isAlredyUser) {
+          return res.status(400).json({
+            error: "User Alredy Created, Login To Continue",
+          });
+        }
         const newUser = await User.create({
           email,
           name: name,
