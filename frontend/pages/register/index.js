@@ -59,8 +59,6 @@ const index = () => {
         token
       );
 
-      data.token = token;
-
       window.localStorage.setItem("auth", JSON.stringify(data));
 
       dispatch({
@@ -70,7 +68,7 @@ const index = () => {
           email: data.email,
           role: data.role,
           _id: data._id,
-          token: token,
+          token: data.token,
         },
       });
       router.push("/");

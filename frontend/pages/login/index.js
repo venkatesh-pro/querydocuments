@@ -17,7 +17,6 @@ const index = () => {
         const idTokenResult = await user.getIdTokenResult();
         const { data } = await loginFunction(idTokenResult.token);
 
-        data.token = idTokenResult.token;
         window.localStorage.setItem("auth", JSON.stringify(data));
 
         dispatch({
@@ -27,7 +26,7 @@ const index = () => {
             email: data.email,
             role: data.role,
             _id: data._id,
-            token: idTokenResult.token,
+            token: data.token,
           },
         });
         router.push("/");

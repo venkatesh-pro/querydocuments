@@ -1,6 +1,7 @@
 const User = require("../model/auth");
 const TempUser = require("../model/tempUser");
 const geoip = require("geoip-lite");
+const jwt = require("jsonwebtoken");
 
 const client = require("twilio")(
   process.env.TWILIO_ACCOUNT_SID,
@@ -64,7 +65,15 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
 
         await TempUser.deleteOne({ email, phoneNumber });
 
-        res.status(200).json(newUser);
+        const token = jwt.sign(
+          { email: newUser.email },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "30d",
+          }
+        );
+
+        res.status(200).json({ ...newUser._doc, token });
       } else {
         return res.status(400).json({
           error: "Wrong Otp",
@@ -89,13 +98,18 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (user) {
-      res.json(user);
+      const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+        expiresIn: "30d",
+      });
+
+      res.status(200).json({ ...user._doc, token });
     } else {
       res.status(400).json({
         error: "No User Found, Please Register First",
       });
     }
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       error: "Something went wrong.Please try again",
     });

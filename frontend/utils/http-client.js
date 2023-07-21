@@ -3,7 +3,12 @@
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { firebaseAuth } from "../config/firebase";
+import { store } from "../pages/_app";
 
+const logoutUser = () => ({
+  type: "LOGOUT",
+  payload: null,
+});
 const api = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`,
   timeout: 100000,
@@ -31,31 +36,11 @@ api.interceptors.response.use(
   },
   async function (error) {
     console.log("ERROR ...>>>>>>>>>>>>>>>>......>>>>>...", error);
-    const prevRequest = error.config;
     if (error.response.status === 401) {
-      prevRequest.__isRetryRequest = true;
-      // refresh token get
-
-      try {
-        const token = (await firebaseAuth.currentUser.getIdTokenResult(true))
-          .token;
-        console.log("currentUser", token);
-
-        const userAuthStr = localStorage.getItem("auth");
-        if (userAuthStr) {
-          const userAuth = JSON.parse(userAuthStr);
-
-          userAuth.token = token;
-
-          localStorage.setItem("auth", JSON.stringify(userAuth));
-          prevRequest.headers["authtoken"] = `${userAuth.token}`;
-        }
-
-        return axios(prevRequest);
-      } catch (e) {
-        console.log("error in catch", e);
-        return Promise.reject(error);
-      }
+      console.log("removed from local storage");
+      localStorage.removeItem("auth");
+      // localStorage.removeItem("auth");
+      store.dispatch(logoutUser());
     } else {
       return Promise.reject(error);
     }
