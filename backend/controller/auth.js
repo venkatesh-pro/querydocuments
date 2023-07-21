@@ -60,6 +60,10 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
             error: "User Alredy Created, Login To Continue",
           });
         }
+        const token = jwt.sign({ email: email }, process.env.JWT_SECRET, {
+          expiresIn: "1m",
+        });
+        console.log(token);
         const newUser = await User.create({
           email,
           name: name,
@@ -67,19 +71,12 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
           user_id,
           phoneNumber,
           countryCode,
+          token: token,
         });
 
         await TempUser.deleteOne({ email, phoneNumber });
 
-        const token = jwt.sign(
-          { email: newUser.email },
-          process.env.JWT_SECRET,
-          {
-            expiresIn: "30d",
-          }
-        );
-
-        res.status(200).json({ ...newUser._doc, token });
+        res.status(200).json(newUser);
       } else {
         return res.status(400).json({
           error: "Wrong Otp",
@@ -105,10 +102,18 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email });
     if (user) {
       const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-        expiresIn: "30d",
+        expiresIn: "1m",
       });
 
-      res.status(200).json({ ...user._doc, token });
+      const updatedUser = await User.findOneAndUpdate(
+        { email },
+        {
+          token: token,
+        },
+        { new: true }
+      );
+
+      res.status(200).json(updatedUser);
     } else {
       res.status(400).json({
         error: "No User Found, Please Register First",
@@ -122,6 +127,40 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.refreshToken = async (req, res) => {
+  try {
+    const authtoken = req.headers.authtoken;
+    console.log("authtoken", authtoken);
+    if (!authtoken) {
+      console.log("authtoken(): Missing authtoken");
+      return res.status(400);
+    }
+
+    const isUser = await User.findOne({ token: authtoken });
+    if (!isUser) {
+      console.log(`auth token not found; ${authtoken}`);
+      return res.status(400);
+    }
+    const token = jwt.sign({ email: isUser.email }, process.env.JWT_SECRET, {
+      expiresIn: "1m",
+    });
+
+    const updatedUser = await User.findOneAndUpdate(
+      { email: isUser.email },
+      {
+        token: token,
+      },
+      { new: true }
+    );
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      error: "Something went wrong.Please try again",
+    });
+  }
+};
 exports.getCountry = async (req, res) => {
   try {
     const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;

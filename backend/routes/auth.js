@@ -4,6 +4,7 @@ const {
   registerPhoneNumber,
   verifyPhoneNumberOtp,
   getCountry,
+  refreshToken,
 } = require("../controller/auth");
 const { authCheckFirebase, authCheck } = require("../middleware/auth");
 
@@ -22,6 +23,8 @@ router.post(
 
 // i user authCheckFirebase to get the email from the token of firebase
 router.post("/login", authCheckFirebase, login);
+
+router.get("/refreshToken", refreshToken);
 
 // getCountry
 router.get("/paymentCheckoutpage", authCheck, getCountry);
