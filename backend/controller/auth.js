@@ -61,7 +61,7 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
           });
         }
         const token = jwt.sign({ email: email }, process.env.JWT_SECRET, {
-          expiresIn: "1m",
+          expiresIn: "1d",
         });
         console.log(token);
         const newUser = await User.create({
@@ -102,7 +102,7 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email });
     if (user) {
       const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-        expiresIn: "1m",
+        expiresIn: "1d",
       });
 
       const updatedUser = await User.findOneAndUpdate(
@@ -142,7 +142,7 @@ exports.refreshToken = async (req, res) => {
       return res.status(400);
     }
     const token = jwt.sign({ email: isUser.email }, process.env.JWT_SECRET, {
-      expiresIn: "1m",
+      expiresIn: "1d",
     });
 
     const updatedUser = await User.findOneAndUpdate(
