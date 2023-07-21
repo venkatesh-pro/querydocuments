@@ -10,9 +10,9 @@ const AllQueryUpload = ({ allUploads }) => {
 
   return (
     <div className="mt-4">
-      {allUploads.map((allUpload) => {
+      {allUploads.map((allUpload, i) => {
         return (
-          <div className="">
+          <div className="" key={i}>
             <CardActionArea>
               <button
                 className={`${

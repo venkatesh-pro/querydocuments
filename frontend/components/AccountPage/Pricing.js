@@ -73,12 +73,13 @@ const Pricing = ({ fileTypes, handleUploadFile }) => {
         </h1>
       </div>
       <div className="mt-10">
-        {pricingInfo.map((info) => {
+        {pricingInfo.map((info, i) => {
           if (
             info.plan.toLocaleLowerCase() === planFromDb.toLocaleLowerCase()
           ) {
             return (
               <PricingCard
+                key={i}
                 info={info}
                 handleCancelSubscription={handleCancelSubscription}
               />

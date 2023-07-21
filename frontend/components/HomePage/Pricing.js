@@ -17,8 +17,8 @@ const Pricing = ({ planFromDb }) => {
       {/* <div className="mt-10 ">{isDesktop ? "desktop" : "mobile"}</div> */}
       {isDesktop && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3 mt-16">
-          {pricingInfo.map((info) => {
-            return <PricingCard info={info} planFromDb={planFromDb} />;
+          {pricingInfo.map((info, i) => {
+            return <PricingCard info={info} planFromDb={planFromDb} key={i} />;
           })}
         </div>
       )}

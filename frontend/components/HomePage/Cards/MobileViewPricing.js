@@ -81,6 +81,7 @@ const MobileViewPricingCard = ({ pricingInfo, planFromDb }) => {
           <CustomTabPanel
             value={value}
             index={i}
+            key={i}
             style={{
               width: "270px",
               height: "300px",
