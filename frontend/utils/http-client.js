@@ -1,6 +1,7 @@
 /* eslint-disable func-names */
 /* eslint-disable no-param-reassign */
 import axios from "axios";
+import { store } from "../pages/_app";
 
 const api = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`,
@@ -110,6 +111,11 @@ api.interceptors.response.use(
 function authRejectPromise(error) {
   localStorage.removeItem("auth");
   // toast.error("Please login");
+  store.dispatch({
+    type: "LOGOUT",
+    payload: null,
+  });
+
   return Promise.reject(error);
 }
 export default api;
