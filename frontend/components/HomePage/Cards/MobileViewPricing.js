@@ -112,8 +112,17 @@ const MobileViewPricingCard = ({ pricingInfo, planFromDb }) => {
                 <Typography variant="p" color="text.secondary">
                   {info.totalQuestionPerDay} questions/day
                 </Typography>
+                {info.plan.toLocaleLowerCase() === "pro" && (
+                  <Typography variant="p" color="text.secondary">
+                    Put Any Website Url
+                  </Typography>
+                )}
               </div>
-              <div className="mt-16">
+              <div
+                className={`${
+                  info.plan.toLocaleLowerCase() === "pro" ? "mt-10" : "mt-16"
+                }`}
+              >
                 {planFromDb?.toLocaleLowerCase() ===
                 info.plan.toLocaleLowerCase() ? (
                   <button className="w-full cursor-default bg-black p-2 rounded-xl text-white">
