@@ -20,6 +20,9 @@ const userSchema = mongoose.Schema(
     token: {
       type: String,
     },
+    refreshToken: {
+      type: String,
+    },
     countryCode: {
       type: String,
     },

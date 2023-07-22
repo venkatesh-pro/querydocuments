@@ -1,12 +1,13 @@
 <!-- 1. custom auth token -->
+
 2. login and register page design
 
-3. pinecone to qdrant
-4. url feature
-5. file upload progress
+3. url feature
+4. file upload progress
+5. pinecone to qdrant
 <!-- final -->
 6. already have the country check api and implemented, using that need to change the current inr or dollar
-7. only One phonenumber
+7. only One phonenumber check while register
 8. razorpay and stripe webhook security
    <!-- 6. intimate after payment success or failure -->
    <!-- 7. intimate after cancel payment -->

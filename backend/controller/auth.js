@@ -60,10 +60,22 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
             error: "User Alredy Created, Login To Continue",
           });
         }
-        const token = jwt.sign({ email: email }, process.env.JWT_SECRET, {
-          expiresIn: "1d",
-        });
-        console.log(token);
+
+        const newAuthToken = jwt.sign(
+          { email: email },
+          process.env.JWT_AUTH_TOKEN,
+          {
+            expiresIn: "1m",
+          }
+        );
+        const newRefreshToken = jwt.sign(
+          { email: email },
+          process.env.JWT_REFRESH_TOKEN,
+          {
+            expiresIn: "10m",
+          }
+        );
+
         const newUser = await User.create({
           email,
           name: name,
@@ -71,7 +83,8 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
           user_id,
           phoneNumber,
           countryCode,
-          token: token,
+          token: newAuthToken,
+          refreshToken: newRefreshToken,
         });
 
         await TempUser.deleteOne({ email, phoneNumber });
@@ -101,14 +114,26 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (user) {
-      const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-        expiresIn: "1d",
-      });
+      const newAuthToken = jwt.sign(
+        { email: email },
+        process.env.JWT_AUTH_TOKEN,
+        {
+          expiresIn: "1m",
+        }
+      );
+      const newRefreshToken = jwt.sign(
+        { email: email },
+        process.env.JWT_REFRESH_TOKEN,
+        {
+          expiresIn: "10m",
+        }
+      );
 
       const updatedUser = await User.findOneAndUpdate(
         { email },
         {
-          token: token,
+          token: newAuthToken,
+          refreshToken: newRefreshToken,
         },
         { new: true }
       );
@@ -129,26 +154,53 @@ exports.login = async (req, res) => {
 
 exports.refreshToken = async (req, res) => {
   try {
-    const authtoken = req.headers.authtoken;
-    console.log("authtoken", authtoken);
-    if (!authtoken) {
-      console.log("authtoken(): Missing authtoken");
+    const refreshToken = req.headers.refresh_token;
+    console.log("refresh token", refreshToken);
+    if (!refreshToken) {
+      console.log("refreshToken(): Missing refresh token");
+      return res.status(400).end();
+    }
+
+    const isUser = await User.findOne({ refreshToken });
+    if (!isUser) {
+      console.log(`auth token not found; ${refreshToken}`);
       return res.status(400);
     }
 
-    const isUser = await User.findOne({ token: authtoken });
-    if (!isUser) {
-      console.log(`auth token not found; ${authtoken}`);
+    const decoded = await jwt.verify(
+      isUser.refreshToken,
+      process.env.JWT_REFRESH_TOKEN
+    );
+
+    console.log(decoded);
+    const user = await User.findOne({ email: decoded.email });
+
+    if (!user) {
+      console.log(`User not found for refresh token; ${refreshToken}`);
       return res.status(400);
     }
-    const token = jwt.sign({ email: isUser.email }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+
+    const newAuthToken = jwt.sign(
+      { email: user.email },
+      process.env.JWT_AUTH_TOKEN,
+      {
+        expiresIn: "1m",
+      }
+    );
+    // Generate refresh token
+    const newRefreshToken = jwt.sign(
+      { email: user.email },
+      process.env.JWT_REFRESH_TOKEN,
+      {
+        expiresIn: "10m",
+      }
+    );
 
     const updatedUser = await User.findOneAndUpdate(
       { email: isUser.email },
       {
-        token: token,
+        token: newAuthToken,
+        refreshToken: newRefreshToken,
       },
       { new: true }
     );

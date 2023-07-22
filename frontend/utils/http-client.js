@@ -38,7 +38,7 @@ api.interceptors.response.use(
         const userAuthStr = localStorage.getItem("auth");
         if (userAuthStr) {
           const userAuth = JSON.parse(userAuthStr);
-          if (!userAuth?.token) {
+          if (!userAuth?.refreshToken) {
             return authRejectPromise(error);
           }
           let data;
@@ -47,20 +47,23 @@ api.interceptors.response.use(
               `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/refreshToken`,
               {
                 headers: {
-                  authtoken: userAuth?.token,
+                  refresh_token: userAuth?.refreshToken,
                 },
               }
             );
             data = tokenResponse.data;
           } catch (error) {
             // no toast, no message is necessary
-            return Promise.reject(error);
+            // return Promise.reject(error);
+            return authRejectPromise(error);
           }
 
           const authLocalStr = localStorage.getItem("auth");
           if (authLocalStr) {
             const authLocal = JSON.parse(authLocalStr);
             authLocal.token = data.token;
+            authLocal.refreshToken = data?.refreshToken;
+
             if (localStorage.getItem("auth")) {
               localStorage.setItem("auth", JSON.stringify(authLocal));
             }

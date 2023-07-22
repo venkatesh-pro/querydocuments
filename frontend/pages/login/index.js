@@ -27,8 +27,10 @@ const index = () => {
             role: data.role,
             _id: data._id,
             token: data.token,
+            refreshToken: data.refreshToken,
           },
         });
+
         router.push("/");
       }
     } catch (error) {

@@ -21,7 +21,7 @@ exports.authCheck = async (req, res, next) => {
   try {
     const decoded = await promisify(jwt.verify)(
       req.headers.authtoken,
-      process.env.JWT_SECRET
+      process.env.JWT_AUTH_TOKEN
     );
     console.log(decoded);
 
