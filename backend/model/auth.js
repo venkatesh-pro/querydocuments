@@ -93,6 +93,11 @@ const userSchema = mongoose.Schema(
         required: true,
         default: 0,
       },
+      totalLinkUsed: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
       totalQuestionsAsked: {
         type: Number,
         required: true,

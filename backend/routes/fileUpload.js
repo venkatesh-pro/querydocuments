@@ -8,6 +8,7 @@ const {
   whichplan,
   subscribeRazorpay,
   subscribeStripe,
+  uploadLink,
 } = require("../controller/fileUpload.js");
 const { authCheck } = require("../middleware/auth");
 const fileUpload = require("express-fileupload");
@@ -16,6 +17,7 @@ const { validateFile } = require("../middleware/fileUpload.js");
 const router = express.Router();
 
 router.post("/uploadFile", authCheck, fileUpload(), validateFile, uploadFile);
+router.post("/uploadLink", authCheck, uploadLink);
 router.post("/sendMessage", authCheck, sendMessage);
 
 // payment gateway

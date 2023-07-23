@@ -1,7 +1,7 @@
 import React from "react";
 import { FileUploader } from "react-drag-drop-files";
 import FileUploadComponent from "../FileUpload/FileUploadComponent";
-const Home = () => {
+const Home = ({ planFromDb }) => {
   return (
     <div
       id="home"
@@ -15,7 +15,7 @@ const Home = () => {
         </h1>
       </div>
       <div className="mt-10 w-full flex justify-center">
-        <FileUploadComponent />
+        <FileUploadComponent planFromDb={planFromDb} />
       </div>
     </div>
   );

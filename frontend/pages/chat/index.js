@@ -25,11 +25,13 @@ import { getAllUploadsFunction } from "../../function/queryUpload";
 import { useEffect } from "react";
 import AllQueryUpload from "../../components/ChatPage/AllQueryUpload";
 import FileUploadComponent from "../../components/FileUpload/FileUploadComponent";
+import api from "../../utils/http-client";
 
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
   const [allUploads, setAllUploads] = useState([]);
+  const [planFromDb, setPlanFromDb] = useState("");
 
   const { auth } = useSelector((state) => ({ ...state }));
   const router = useRouter();
@@ -48,9 +50,24 @@ function ResponsiveDrawer(props) {
     const { data } = await getAllUploadsFunction(auth.token);
     setAllUploads(data);
   };
+
+  const whichplanFunction = async () => {
+    try {
+      const { data } = await api.get(`/whichplan`, {
+        headers: {
+          authToken: auth.token,
+        },
+      });
+
+      setPlanFromDb(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     if (auth?.token) {
       getAllUploads();
+      whichplanFunction();
     }
   }, [auth]);
   return (
@@ -135,7 +152,8 @@ function ResponsiveDrawer(props) {
           </Box>
         </Box>
         <div className="flex h-[92vh] items-center justify-center w-full">
-          <FileUploadComponent />
+          {/* change copy from home page one */}
+          <FileUploadComponent planFromDb={planFromDb} />
         </div>
       </Box>
     </>

@@ -34,7 +34,7 @@ const index = () => {
   }, [auth]);
   return (
     <div className="w-full h-[92vh]">
-      <Home />
+      <Home planFromDb={planFromDb} />
       <Pricing planFromDb={planFromDb} />
     </div>
   );

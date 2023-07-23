@@ -11,6 +11,11 @@ const fileUploadSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    isLink: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
     userId: {
       type: ObjectId,
       ref: "User",

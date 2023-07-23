@@ -1009,3 +1009,191 @@ exports.cancelSubsciption = async (req, res) => {
     res.status(400).json(error.message);
   }
 };
+
+// upload link
+
+const processLink = async (url, maximumPage) => {
+  try {
+    console.log("Link process");
+    const extractText = () => {
+      return new Promise((resolve, reject) => {
+        textract.fromUrl(url, (error, text) => {
+          if (error) {
+            console.log("error2", error);
+            reject(new Error("Invalid File Type"));
+          } else {
+            resolve(text);
+          }
+        });
+      });
+    };
+
+    const text = await extractText();
+    console.log(text);
+    const averageCharsPerPage = 2000; // Adjust as needed for your document
+    const pageCount = Math.ceil(text.length / averageCharsPerPage);
+
+    console.log({ pageCount });
+
+    if (pageCount <= maximumPage) {
+      return text;
+    } else {
+      throw new Error(`Your limit is upto ${maximumPage} pages`);
+    }
+  } catch (error) {
+    console.log("error1", error);
+    throw new Error(error.message);
+  }
+};
+const processStoringForLink = async (url, text, userData) => {
+  // split the text
+  try {
+    const fileUploadRes = await FileUpload.create({
+      fileName: url,
+      isLink: true,
+      fileUrl: url,
+      userId: userData._id.toString(),
+    });
+    const user = {
+      userId: userData._id.toString(),
+      fileId: fileUploadRes._id.toString(),
+    };
+    const text_splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 1000,
+      chunkOverlap: 200,
+    });
+    const chunks = await text_splitter.createDocuments([text], [user]);
+    console.log("chunk");
+    await PineconeStore.fromDocuments(
+      chunks,
+      new OpenAIEmbeddings({
+        openAIApiKey: process.env.OPENAI_API_KEY,
+      }),
+      {
+        pineconeIndex,
+      }
+    );
+
+    return fileUploadRes._id;
+  } catch (error) {
+    console.log(error);
+    throw new Error("File Upload Failed");
+  }
+};
+const uploadPineConeFunctionUrlPaid = async (url, user, maximumPage) => {
+  try {
+    const text = await processLink(url, maximumPage);
+    const fileUploadId = await processStoringForLink(url, text, user);
+
+    // Increment the totalFileUsed count
+    user.paidPlanUsageData.totalLinkUsed += 1;
+    await user.save();
+
+    return fileUploadId;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+};
+
+const paidUsageUploadForProPlanLink = async (url, user) => {
+  // we are getting today date , so we can limit as per the day, per day 2 times  for example
+  const todayDate = new Date().getDate(); //for example today is 12
+  console.log(todayDate);
+
+  // if todayDate and user saved date is today, we are using today, else we will reset to totalFileUser:0, so user can continue uploading
+  if (todayDate == user.paidPlanUsageData.todayDate) {
+    if (
+      user.paidPlanUsageData.totalLinkUsed < planFeature["pro"].maxLinkPerDay
+    ) {
+      const fileUploadId = await uploadPineConeFunctionUrlPaid(
+        url,
+        user,
+        planFeature["pro"].maximumPage
+      );
+      return fileUploadId;
+    } else {
+      throw new Error("Limit Execeded");
+    }
+  } else {
+    const updatedPaidUsageUser = await User.findByIdAndUpdate(
+      user._id,
+      {
+        // paidPlanUsageData: {
+        //   todayDate,
+        //   totalFileUsed: 0,
+        // },
+        $set: {
+          "paidPlanUsageData.todayDate": todayDate,
+          "paidPlanUsageData.totalLinkUsed": 0,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (
+      updatedPaidUsageUser.paidPlanUsageData.totalLinkUsed <
+      planFeature["pro"].maxLinkPerDay
+    ) {
+      const fileUploadId = await uploadPineConeFunctionUrlPaid(
+        url,
+        user,
+        planFeature["pro"].maximumPage
+      );
+      return fileUploadId;
+    } else {
+      throw new Error("Limit Execeded");
+    }
+  }
+};
+exports.uploadLink = async (req, res) => {
+  try {
+    const { email } = req.user;
+    const { url } = req.body;
+    console.log(email);
+
+    const user = await User.findOne({ email });
+
+    if (user.isStripe === true || user.isRazorpay === true) {
+      // continue
+
+      // we check this for if user cancel inbetween before the subscription expired
+      const isExpired =
+        user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+
+      console.log({ isExpired });
+      // console.log({ isActive });
+
+      // if active then continue to paid else free
+      if (isExpired) {
+        // need to check for which plan user subscribed , [free, basic, pro]
+        if (user.plan === "basic") {
+          // basic plan
+          return res.status(400).json("Not Access To Basic Plan");
+        } else if (user.plan === "pro") {
+          // pro plan
+
+          const fileUploadId = await paidUsageUploadForProPlanLink(url, user);
+          console.log("success pro");
+
+          return res.json(fileUploadId);
+        }
+      } else {
+        // free plan
+        return res.status(400).json("Not Access To Free Plan");
+      }
+    } else {
+      // free plan
+      return res.status(400).json("Not Access To Free Plan");
+    }
+  } catch (error) {
+    console.log(error);
+    console.log(error.message);
+
+    res.status(400).json({
+      error: error.message ? error.message : "Something Went Wrong",
+    });
+  }
+};

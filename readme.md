@@ -2,7 +2,7 @@
 
 2. login and register page design
 
-3. url feature
+<!-- 3. url feature -->
 4. file upload progress
 5. pinecone to qdrant
 <!-- final -->

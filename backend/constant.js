@@ -15,6 +15,7 @@ const planFeature = {
   },
   pro: {
     maxFileUsedPerDay: 6,
+    maxLinkPerDay: 6,
     maxQuestionsAskedPerDay: 9,
     // maxFileUsed: 400,
     // maxQuestionsAsked: 10000,

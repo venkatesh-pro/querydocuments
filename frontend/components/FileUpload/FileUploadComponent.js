@@ -5,9 +5,11 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { fileTypes } from "../../constant/HomePage/fileType";
 import { fileUploadFunction } from "../../function/fileUpload";
+import UrlModal from "./UrlModal/UrlModal";
 
-const FileUploadComponent = () => {
+const FileUploadComponent = ({ planFromDb }) => {
   const [isFile, setIsFile] = useState(true);
+  const [isUrlModal, setIsUrlModal] = useState(false);
 
   const { auth } = useSelector((state) => ({ ...state }));
   const router = useRouter();
@@ -30,8 +32,12 @@ const FileUploadComponent = () => {
       console.log("login to upload");
     }
   };
+
+  const openUrlModal = () => {
+    setIsUrlModal(true);
+  };
   return (
-    <>
+    <div className="relative">
       <FileUploader
         handleChange={handleUploadFile}
         name="file"
@@ -48,7 +54,16 @@ const FileUploadComponent = () => {
           </p>
         </div>
       </FileUploader>
-    </>
+      {planFromDb.toLocaleLowerCase() === "pro" && (
+        <p
+          onClick={openUrlModal}
+          className="p-3 cursor-pointer absolute bottom-0 right-0 text-sm"
+        >
+          From Url
+        </p>
+      )}
+      <UrlModal open={isUrlModal} setOpen={setIsUrlModal} />
+    </div>
   );
 };
 
