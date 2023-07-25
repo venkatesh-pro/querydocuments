@@ -54,7 +54,7 @@ const index = () => {
           alt="google icon"
           className="w-[20px] h-[20px]"
         />
-        <span className="ml-2">Register with Google</span>
+        <span className="ml-2">Login with Google</span>
       </button>
     </div>
   );

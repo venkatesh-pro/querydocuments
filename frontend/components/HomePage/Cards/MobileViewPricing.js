@@ -38,7 +38,7 @@ CustomTabPanel.propTypes = {
   index: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
 };
-const MobileViewPricingCard = ({ pricingInfo, planFromDb }) => {
+const MobileViewPricingCard = ({ pricingInfo, planFromDb, country }) => {
   const [value, setValue] = React.useState(2);
 
   const { auth } = useSelector((state) => ({ ...state }));
@@ -99,7 +99,10 @@ const MobileViewPricingCard = ({ pricingInfo, planFromDb }) => {
                   className="font-bold"
                   component="div"
                 >
-                  ${info.dollarPrice}/mo
+                  {country === "IN"
+                    ? `₹ ${info.indianPrice}`
+                    : `$${info.dollarPrice}`}
+                  /mo
                 </Typography>
               </div>
               <div className="mt-9 flex flex-col">

@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import api from "../utils/http-client";
 import Head from "next/head";
+import { toast } from "react-hot-toast";
 
 const checkout = () => {
   const [planChoosen, setPlanChoosen] = useState("");
@@ -115,22 +116,26 @@ const checkout = () => {
   }, []);
 
   const getCountry = async () => {
-    try {
-      setIsLoading(true);
-      const { data } = await api.get(`/paymentCheckoutpage`);
-      console.log("data:", data);
-      setIsLoading(false);
+    if (auth?.token) {
+      try {
+        setIsLoading(true);
+        const { data } = await api.get(`/paymentCheckoutpage`);
+        console.log("data:", data);
+        setIsLoading(false);
 
-      setCountry(data);
+        setCountry(data);
 
-      if (data === "IN") {
-        setPaymentMethodChoosen("razorpay");
-      } else {
-        setPaymentMethodChoosen("stripe");
+        if (data === "IN") {
+          setPaymentMethodChoosen("razorpay");
+        } else {
+          setPaymentMethodChoosen("stripe");
+        }
+      } catch (error) {
+        console.log(error);
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
+    } else {
+      // toast.error("Login To Continue");
     }
   };
   useEffect(() => {

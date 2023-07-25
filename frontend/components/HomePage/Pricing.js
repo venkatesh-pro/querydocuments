@@ -6,7 +6,7 @@ import PricingCard from "./Cards/Pricing";
 import MobileViewPricingCard from "./Cards/MobileViewPricing";
 import { pricingInfo } from "../../constant/HomePage/Pricing";
 
-const Pricing = ({ planFromDb }) => {
+const Pricing = ({ planFromDb, country }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
 
   return (
@@ -18,7 +18,14 @@ const Pricing = ({ planFromDb }) => {
       {isDesktop && (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3 mt-16">
           {pricingInfo.map((info, i) => {
-            return <PricingCard info={info} planFromDb={planFromDb} key={i} />;
+            return (
+              <PricingCard
+                info={info}
+                planFromDb={planFromDb}
+                key={i}
+                country={country}
+              />
+            );
           })}
         </div>
       )}
@@ -28,6 +35,7 @@ const Pricing = ({ planFromDb }) => {
           <MobileViewPricingCard
             pricingInfo={pricingInfo}
             planFromDb={planFromDb}
+            country={country}
           />
         </div>
       )}

@@ -1,20 +1,27 @@
-<!-- 1. custom auth token -->
+1. razorpay and stripe webhook security
+2. change plan id in stripe and razorpay
+
+3. max file size, like 10mb for free,
+
+4. file upload progress
+   <!-- 1. already have the country check api and implemented, using that need to change the current inr or dollar -->
+   <!-- 1. custom auth token -->
 
 <!-- 2. login and register page design -->
-3. file upload progress
    <!-- 3. url feature -->
    <!-- final -->
-4. already have the country check api and implemented, using that need to change the current inr or dollar
 <!-- 5. only One phonenumber check while register -->
-6. razorpay and stripe webhook security
    <!-- 6. intimate after payment success or failure -->
    <!-- 7. intimate after cancel payment -->
-      <!-- 6. if subscribed we need to update the localstorage plan : '' -->
-      <!-- 8. different logic, using expiry date, every time checking the subscription id , create error
-         {
-         statusCode: 429,
-         error: { description: 'Too many requests', code: 'BAD_REQUEST_ERROR' }
-         } -->
+
+<!-- 6. if subscribed we need to update the localstorage plan : ''
+
+7. different logic, using expiry date, every time checking the subscription id , create error
+   {
+   statusCode: 429,
+   error: { description: 'Too many requests', code: 'BAD_REQUEST_ERROR' }
+   } -->
+
    <!-- 2. we only check user.isStripe not user.isRazorpay in upload controller -->
    <!-- 3. cancel subscription for razorpay -->
    <!-- 2. maximumPage check -->

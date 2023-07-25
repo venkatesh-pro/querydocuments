@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-const PricingCard = ({ info, planFromDb }) => {
+const PricingCard = ({ info, planFromDb, country }) => {
   const { auth } = useSelector((state) => ({ ...state }));
 
   const router = useRouter();
@@ -33,7 +33,10 @@ const PricingCard = ({ info, planFromDb }) => {
             className="font-bold"
             component="div"
           >
-            ${info.dollarPrice}/mo
+            {country === "IN"
+              ? `₹ ${info.indianPrice}`
+              : `$${info.dollarPrice}`}
+            /mo
           </Typography>
         </div>
         <div className="mt-9 flex flex-col">

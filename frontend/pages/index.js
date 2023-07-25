@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 const index = () => {
+  const [country, setCountry] = useState("");
   const [planFromDb, setPlanFromDb] = useState("");
 
   const { auth } = useSelector((state) => ({ ...state }));
@@ -32,10 +33,27 @@ const index = () => {
       whichplanFunction();
     }
   }, [auth]);
+
+  const getCountry = async () => {
+    if (auth?.token) {
+      try {
+        const { data } = await api.get(`/paymentCheckoutpage`);
+        console.log("data:", data);
+
+        setCountry(data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+  useEffect(() => {
+    getCountry();
+  }, []);
+
   return (
     <div className="w-full h-[92vh]">
       <Home planFromDb={planFromDb} />
-      <Pricing planFromDb={planFromDb} />
+      <Pricing planFromDb={planFromDb} country={country} />
     </div>
   );
 };
