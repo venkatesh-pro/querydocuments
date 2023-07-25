@@ -3,6 +3,7 @@ import { firebaseAuth, googleAuthProvider } from "../../config/firebase";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { loginFunction } from "../../function/auth";
+import { toast } from "react-hot-toast";
 
 const index = () => {
   const dispatch = useDispatch();
@@ -32,9 +33,12 @@ const index = () => {
         });
 
         router.push("/");
+        toast.success("Login Success");
       }
     } catch (error) {
       console.log(error);
+
+      toast.error(error.response.data.error || error.message);
     }
   };
 

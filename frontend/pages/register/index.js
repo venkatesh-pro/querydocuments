@@ -59,9 +59,9 @@ const index = () => {
     } catch (error) {
       console.log(error);
       toast.error(
-        (error.response.data.error === "Invalid or expired token" &&
-          "Again Register From Google, Token Expired") ||
-          error.message
+        (error.response.data.error === "Invalid or expired token"
+          ? "Again Register From Google, Token Expired"
+          : error.response.data.error) || error.message
       );
     }
   };
@@ -95,9 +95,9 @@ const index = () => {
       console.log(error);
 
       toast.error(
-        (error.response.data.error === "Invalid or expired token" &&
-          "Again Register From Google, Token Expired") ||
-          error.message
+        (error.response.data.error === "Invalid or expired token"
+          ? "Again Register From Google, Token Expired"
+          : error.response.data.error) || error.message
       );
     }
   };

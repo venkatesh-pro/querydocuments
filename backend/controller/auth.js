@@ -13,6 +13,13 @@ exports.registerPhoneNumber = async (req, res) => {
     const { email } = req.user;
     const { phoneNumber } = req.body;
 
+    const isPhoneExist = await User.findOne({ phoneNumber });
+    // if (isPhoneExist) {
+    //   return res.status(400).json({
+    //     error: "Phone Number Already Used",
+    //   });
+    // }
+
     const user = await TempUser.findOne({ email });
 
     const otp = Math.floor(100000 + Math.random() * 900000);
@@ -57,7 +64,7 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
         const isAlredyUser = await User.findOne({ email });
         if (isAlredyUser) {
           return res.status(400).json({
-            error: "User Alredy Created, Login To Continue",
+            error: "You Already Used this Email, Login To Continue",
           });
         }
 
@@ -65,14 +72,14 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
           { email: email },
           process.env.JWT_AUTH_TOKEN,
           {
-            expiresIn: "1m",
+            expiresIn: "1h",
           }
         );
         const newRefreshToken = jwt.sign(
           { email: email },
           process.env.JWT_REFRESH_TOKEN,
           {
-            expiresIn: "10m",
+            expiresIn: "7d",
           }
         );
 
@@ -117,14 +124,14 @@ exports.login = async (req, res) => {
         { email: email },
         process.env.JWT_AUTH_TOKEN,
         {
-          expiresIn: "1m",
+          expiresIn: "1h",
         }
       );
       const newRefreshToken = jwt.sign(
         { email: email },
         process.env.JWT_REFRESH_TOKEN,
         {
-          expiresIn: "10m",
+          expiresIn: "7d",
         }
       );
 
@@ -183,7 +190,7 @@ exports.refreshToken = async (req, res) => {
       { email: user.email },
       process.env.JWT_AUTH_TOKEN,
       {
-        expiresIn: "1m",
+        expiresIn: "1h",
       }
     );
     // Generate refresh token
@@ -191,7 +198,7 @@ exports.refreshToken = async (req, res) => {
       { email: user.email },
       process.env.JWT_REFRESH_TOKEN,
       {
-        expiresIn: "10m",
+        expiresIn: "7d",
       }
     );
 
