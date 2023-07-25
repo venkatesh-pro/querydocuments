@@ -13,7 +13,7 @@ exports.authCheckFirebase = async (req, res, next) => {
   } catch (err) {
     console.log("err", err);
     res.status(401).json({
-      err: "Invalid or expired token",
+      error: "Invalid or expired token",
     });
   }
 };
@@ -37,7 +37,7 @@ exports.authCheck = async (req, res, next) => {
   } catch (err) {
     console.log("err", err);
     res.status(401).json({
-      err: "Invalid or expired token",
+      error: "Invalid or expired token",
     });
   }
 };

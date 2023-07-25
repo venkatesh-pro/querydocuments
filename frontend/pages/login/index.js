@@ -40,9 +40,17 @@ const index = () => {
 
   useEffect(() => {}, []);
   return (
-    <div>
-      <button className="border-2" onClick={handleLogin}>
-        Login
+    <div className="flex items-center justify-center h-[70vh]">
+      <button
+        onClick={handleLogin}
+        className="flex border-4 mt-3 p-2 items-center "
+      >
+        <img
+          src="/googleicon.png"
+          alt="google icon"
+          className="w-[20px] h-[20px]"
+        />
+        <span className="ml-2">Register with Google</span>
       </button>
     </div>
   );

@@ -8,11 +8,6 @@ const tempUserSchema = mongoose.Schema(
       required: true,
       index: true,
     },
-    countryCode: {
-      type: String,
-      required: true,
-      default: "+91",
-    },
     phoneNumber: {
       type: String,
       required: true,

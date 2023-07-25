@@ -11,7 +11,7 @@ const client = require("twilio")(
 exports.registerPhoneNumber = async (req, res) => {
   try {
     const { email } = req.user;
-    const { phoneNumber, countryCode } = req.body;
+    const { phoneNumber } = req.body;
 
     const user = await TempUser.findOne({ email });
 
@@ -20,7 +20,7 @@ exports.registerPhoneNumber = async (req, res) => {
     await client.messages.create({
       body: `Enter the otp: ${otp} to complete registration`,
       from: process.env.TWILIO_PHONE_NUMBER,
-      to: `${countryCode}${phoneNumber}`,
+      to: `${phoneNumber}`,
     });
 
     if (user) {
@@ -82,7 +82,6 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
           picture,
           user_id,
           phoneNumber,
-          countryCode,
           token: newAuthToken,
           refreshToken: newRefreshToken,
         });

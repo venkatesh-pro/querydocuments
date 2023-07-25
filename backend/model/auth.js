@@ -23,9 +23,9 @@ const userSchema = mongoose.Schema(
     refreshToken: {
       type: String,
     },
-    countryCode: {
-      type: String,
-    },
+    // countryCode: {
+    //   type: String,
+    // },
     // didn't added the feature, i need to save by ip address
     country: {
       type: String,
