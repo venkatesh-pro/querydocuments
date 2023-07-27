@@ -17,12 +17,15 @@ const AllQueryUpload = ({ allUploads }) => {
               <button
                 className={`${
                   router.query.id == allUpload._id ? "bg-[#fffaf2]" : ""
-                } w-full h-full text-start p-2`}
+                } w-full flex items-center h-full text-start p-2`}
                 onClick={() => {
                   router.push(`/chat/${allUpload._id}`);
                 }}
               >
-                <ChatBubbleOutline fontSize="small" /> {allUpload.fileName}
+                <ChatBubbleOutline fontSize="small" />
+                <p className="overflow-x-scroll w-full ml-3">
+                  {allUpload.fileName}
+                </p>
               </button>
             </CardActionArea>
           </div>

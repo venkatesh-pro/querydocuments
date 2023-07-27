@@ -4,6 +4,8 @@
 3. max file size, like 10mb for free,
 
 4. file upload progress
+<!-- 5. remove storing file in s3 -->
+
    <!-- 1. already have the country check api and implemented, using that need to change the current inr or dollar -->
    <!-- 1. custom auth token -->
 

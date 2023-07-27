@@ -9,7 +9,7 @@ const fileUploadSchema = mongoose.Schema(
     },
     fileUrl: {
       type: String,
-      required: true,
+      // required: true,
     },
     isLink: {
       type: Boolean,

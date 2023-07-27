@@ -56,14 +56,14 @@ const razorpayPriceId = {
   pro: "plan_MCreq3ULCaedtv",
 };
 
-const awsConfig = {
-  apiVersion: process.env.AWS_API_VERSION,
-  secretAccessKey: process.env.AWS_SECRET_KEY,
-  region: process.env.AWS_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-};
+// const awsConfig = {
+//   apiVersion: process.env.AWS_API_VERSION,
+//   secretAccessKey: process.env.AWS_SECRET_KEY,
+//   region: process.env.AWS_REGION,
+//   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+// };
 
-const s3 = new AWS.S3(awsConfig);
+// const s3 = new AWS.S3(awsConfig);
 
 // functions
 const uploadS3AndPineConeFunctionFree = async (file, user, maximumPage) => {
@@ -229,56 +229,52 @@ const processStoring = async (file, text, userData) => {
   // split the text
   try {
     const fileName = file.name;
-    const parts = fileName.split(".");
-    const extension = parts[parts.length - 1];
+    // const parts = fileName.split(".");
+    // const extension = parts[parts.length - 1];
 
-    const params = {
-      Bucket: process.env.BUCKET_NAME,
-      Key: `${uuidv4()}.${extension}`,
-      Body: file.data,
-      ACL: "public-read",
-      ContentEncoding: "7bit",
-      ContentType: file.mimetype,
+    // const params = {
+    //   Bucket: process.env.BUCKET_NAME,
+    //   Key: `${uuidv4()}.${extension}`,
+    //   Body: file.data,
+    //   ACL: "public-read",
+    //   ContentEncoding: "7bit",
+    //   ContentType: file.mimetype,
+    // };
+    // const data = await s3
+    //   .upload(params)
+    //   .on("httpUploadProgress", (progress) => {
+    //     console.log("S3 Upload Progress:", progress);
+    //   })
+    //   .promise();
+
+    // console.log(data.Location);
+
+    const fileUploadRes = await FileUpload.create({
+      fileName: fileName,
+      // fileUrl: data.Location,
+      userId: userData._id.toString(),
+    });
+    const user = {
+      userId: userData._id.toString(),
+      fileId: fileUploadRes._id.toString(),
     };
-    const data = await s3
-      .upload(params)
-      .on("httpUploadProgress", (progress) => {
-        console.log("S3 Upload Progress:", progress);
-      })
-      .promise();
+    const text_splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 1000,
+      chunkOverlap: 200,
+    });
+    const chunks = await text_splitter.createDocuments([text], [user]);
+    console.log("chunk");
+    await PineconeStore.fromDocuments(
+      chunks,
+      new OpenAIEmbeddings({
+        openAIApiKey: process.env.OPENAI_API_KEY,
+      }),
+      {
+        pineconeIndex,
+      }
+    );
 
-    console.log(data.Location);
-
-    if (data.Location) {
-      const fileUploadRes = await FileUpload.create({
-        fileName: fileName,
-        fileUrl: data.Location,
-        userId: userData._id.toString(),
-      });
-      const user = {
-        userId: userData._id.toString(),
-        fileId: fileUploadRes._id.toString(),
-      };
-      const text_splitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
-        chunkOverlap: 200,
-      });
-      const chunks = await text_splitter.createDocuments([text], [user]);
-      console.log("chunk");
-      await PineconeStore.fromDocuments(
-        chunks,
-        new OpenAIEmbeddings({
-          openAIApiKey: process.env.OPENAI_API_KEY,
-        }),
-        {
-          pineconeIndex,
-        }
-      );
-
-      return fileUploadRes._id;
-    } else {
-      throw new Error("File Upload Failed");
-    }
+    return fileUploadRes._id;
   } catch (error) {
     console.log(error);
     throw new Error("File Upload Failed");
@@ -868,6 +864,8 @@ exports.razorpayWebhook = async (request, response) => {
 */
 
   let event = request.body;
+
+  console.log(event);
   const customerId = event.payload.payment.entity.customer_id;
 
   const user = await User.findOne({ razorpayCustomerId: customerId });
