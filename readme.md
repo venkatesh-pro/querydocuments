@@ -1,13 +1,15 @@
 1. razorpay and stripe webhook security
 2. change plan id in stripe and razorpay
+3. loading icon in upload and chat
+4. toast notification
+5. max file size, like 10mb for free,
+6. next due date collect from the stripe and razorpay and show in account page
+7. refund status feature
+8. file upload progress
+   <!-- 5. remove storing file in s3 -->
 
-3. max file size, like 10mb for free,
-
-4. file upload progress
-<!-- 5. remove storing file in s3 -->
-
-   <!-- 1. already have the country check api and implemented, using that need to change the current inr or dollar -->
-   <!-- 1. custom auth token -->
+      <!-- 1. already have the country check api and implemented, using that need to change the current inr or dollar -->
+      <!-- 1. custom auth token -->
 
 <!-- 2. login and register page design -->
    <!-- 3. url feature -->

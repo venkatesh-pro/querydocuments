@@ -12,6 +12,7 @@ const {
 } = require("../controller/fileUpload.js");
 const { authCheck } = require("../middleware/auth");
 const fileUpload = require("express-fileupload");
+const bodyParser = require("body-parser");
 const { validateFile } = require("../middleware/fileUpload.js");
 
 const router = express.Router();

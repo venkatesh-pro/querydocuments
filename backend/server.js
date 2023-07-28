@@ -3,6 +3,7 @@ const cors = require("cors");
 const { config } = require("dotenv");
 const { readFileSync, readdirSync } = require("fs");
 const connectDb = require("./config/db");
+const bodyParser = require("body-parser");
 
 config({
   path: "./.env",
@@ -10,6 +11,10 @@ config({
 const app = express();
 
 app.use(cors());
+
+// only for stripe
+app.use("/api/stripe-webhook", bodyParser.raw({ type: "*/*" }));
+
 app.use(express.json());
 
 // db

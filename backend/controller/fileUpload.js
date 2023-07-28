@@ -19,6 +19,7 @@ const { ChatOpenAI } = require("langchain/chat_models/openai");
 const Razorpay = require("razorpay");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { planFeature } = require("../constant");
+const crypto = require("crypto");
 
 // pinecone
 let pineconeClient;
@@ -775,15 +776,22 @@ exports.subscribeRazorpay = async (req, res) => {
 };
 exports.webhook = async (request, response) => {
   const sig = request.headers["stripe-signature"];
+  console.log("sig", sig);
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(
+      request.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
 
-  let event = request.body;
-  console.log(event);
-  // try {
-  //   event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-  // } catch (err) {
-  //   response.status(400).send(`Webhook Error: ${err.message}`);
-  //   return;
-  // }
+    console.log("ENVENTTTTT=>>>>>> ", event);
+  } catch (err) {
+    console.log(err);
+    response.status(400).send(`Webhook Error: ${err.message}`);
+    return;
+  }
+
   const customerId = event.data.object.customer;
   const user = await User.findOne({ stripeCustomerId: customerId });
 
@@ -838,85 +846,78 @@ exports.webhook = async (request, response) => {
   response.send();
 };
 exports.razorpayWebhook = async (request, response) => {
-  /*
+  // do a validation
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
-	// do a validation
-	const secret = '12345678'
+  console.log(request.body);
 
-	console.log(req.body)
+  const shasum = crypto.createHmac("sha256", secret);
+  shasum.update(JSON.stringify(request.body));
+  const digest = shasum.digest("hex");
 
-	const crypto = require('crypto')
+  console.log(digest, request.headers["x-razorpay-signature"]);
 
-	const shasum = crypto.createHmac('sha256', secret)
-	shasum.update(JSON.stringify(req.body))
-	const digest = shasum.digest('hex')
+  if (digest === request.headers["x-razorpay-signature"]) {
+    console.log("request is legit");
+    // process it
+    let event = request.body;
 
-	console.log(digest, req.headers['x-razorpay-signature'])
+    console.log(event);
+    const customerId = event.payload.payment.entity.customer_id;
 
-	if (digest === req.headers['x-razorpay-signature']) {
-		console.log('request is legit')
-		// process it
-		require('fs').writeFileSync('payment1.json', JSON.stringify(req.body, null, 4))
-	} else {
-		// pass it
-	}
-	res.json({ status: 'ok' })
-*/
+    const user = await User.findOne({ razorpayCustomerId: customerId });
 
-  let event = request.body;
+    // Handle the event
+    switch (request.body.event) {
+      case "order.paid":
+        console.log("order paid");
+        if (user) {
+          if (event.payload.payment.entity.amount === 20000) {
+            user.plan = "basic";
+            user.planForUI = "basic";
+          } else if (event.payload.payment.entity.amount === 100000) {
+            user.plan = "pro";
+            user.planForUI = "pro";
+          }
 
-  console.log(event);
-  const customerId = event.payload.payment.entity.customer_id;
+          user.isRazorpay = true;
+          user.isStripe = false;
 
-  const user = await User.findOne({ razorpayCustomerId: customerId });
+          user.paidPlanUsageData.totalFileUsed = 0;
+          user.paidPlanUsageData.totalQuestionsAsked = 0;
 
-  // Handle the event
-  switch (request.body.event) {
-    case "order.paid":
-      console.log("order paid");
-      if (user) {
-        if (event.payload.payment.entity.amount === 20000) {
-          user.plan = "basic";
-          user.planForUI = "basic";
-        } else if (event.payload.payment.entity.amount === 100000) {
-          user.plan = "pro";
-          user.planForUI = "pro";
+          // this is not working, sometime end_at : null
+
+          // need to get the expiry date from the razorpay
+
+          // const subscriptionData = await instance.subscriptions.fetch(
+          //   user.razorpaySubscriptionId
+          // );
+
+          // console.log("sub id", user.razorpaySubscriptionId);
+
+          const currentDate = Math.floor(Date.now() / 1000);
+          const expiryDate = currentDate + 30 * 24 * 60 * 60;
+
+          console.log({ currentDate });
+          console.log({ expiryDate });
+
+          user.paidPlanUsageData.expiry = expiryDate;
+
+          await user.save();
         }
+        break;
 
-        user.isRazorpay = true;
-        user.isStripe = false;
+      default:
+        console.log(`Unhandled event type`);
+    }
 
-        user.paidPlanUsageData.totalFileUsed = 0;
-        user.paidPlanUsageData.totalQuestionsAsked = 0;
-
-        // this is not working, sometime end_at : null
-
-        // need to get the expiry date from the razorpay
-
-        // const subscriptionData = await instance.subscriptions.fetch(
-        //   user.razorpaySubscriptionId
-        // );
-
-        // console.log("sub id", user.razorpaySubscriptionId);
-
-        const currentDate = Math.floor(Date.now() / 1000);
-        const expiryDate = currentDate + 30 * 24 * 60 * 60;
-
-        console.log({ currentDate });
-        console.log({ expiryDate });
-
-        user.paidPlanUsageData.expiry = expiryDate;
-
-        await user.save();
-      }
-      break;
-
-    default:
-      console.log(`Unhandled event type`);
+    // Return a 200 response to acknowledge receipt of the event
+    return response.json({ status: "ok" });
+  } else {
+    // pass it
+    return response.status(400).send("Invalid signature");
   }
-
-  // Return a 200 response to acknowledge receipt of the event
-  response.send();
 };
 
 exports.whichplan = async (req, res) => {
