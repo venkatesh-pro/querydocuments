@@ -8,7 +8,7 @@ const cancelled = () => {
       <div className="mt-4">
         <Link className="p-2 rounded-lg bg-green-700 text-white" href={"/chat"}>
           Start Chat
-        </Link>
+        </Link> 
       </div>
     </div>
   );
