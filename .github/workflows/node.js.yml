@@ -19,11 +19,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      -name: Install backend
+
+      - name: Install backend
         working-directory: backend
         run: npm i
         run: pm2 restart backend
-      -name: Install frontend
+      - name: Install frontend
         working-directory: frontend
         run: npm i
         run: npm run build
