@@ -48,13 +48,13 @@ const instance = new Razorpay({
 });
 
 const stripePriceId = {
-  basic: "price_1NRoeFSCantt08qFobyAgiih",
-  pro: "price_1NRodrSCantt08qFBlHiMPsK",
+  basic: process.env.STRIPE_PLAN_ID_BASIC,
+  pro: process.env.STRIPE_PLAN_ID_PRO,
 };
 
 const razorpayPriceId = {
-  basic: "plan_MCrcfamQerH6gc",
-  pro: "plan_MCreq3ULCaedtv",
+  basic: process.env.RAZORPAY_PLAN_ID_BASIC,
+  pro: process.env.RAZORPAY_PLAN_ID_PRO,
 };
 
 // const awsConfig = {

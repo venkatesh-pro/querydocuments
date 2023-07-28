@@ -1,4 +1,4 @@
-1. razorpay and stripe webhook security
+<!-- 1. razorpay and stripe webhook security -->
 2. change plan id in stripe and razorpay
 3. loading icon in upload and chat
 4. toast notification
