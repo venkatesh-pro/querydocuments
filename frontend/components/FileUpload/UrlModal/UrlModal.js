@@ -8,6 +8,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { TextField } from "@mui/material";
 import api from "../../../utils/http-client";
 import { useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
 
 const UrlModal = ({ open, setOpen }) => {
   const [url, setUrl] = useState("");
@@ -59,9 +60,11 @@ const UrlModal = ({ open, setOpen }) => {
         if (data) router.push(`/chat/${data}`);
       } else {
         console.log("In Valid URL");
+        toast.error("Invalid Url");
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.error || "Something went wrong");
     }
   };
   return (

@@ -1,4 +1,5 @@
 <!-- 1. razorpay and stripe webhook security -->
+
 2. change plan id in stripe and razorpay
 3. loading icon in upload and chat
 4. toast notification
@@ -7,10 +8,12 @@
 7. refund status feature
 8. file upload progress
 9. twilio all phone number
-   <!-- 5. remove storing file in s3 -->
+10. don't need to change the refresh token everytime
 
-      <!-- 1. already have the country check api and implemented, using that need to change the current inr or dollar -->
-      <!-- 1. custom auth token -->
+    <!-- 5. remove storing file in s3 -->
+
+       <!-- 1. already have the country check api and implemented, using that need to change the current inr or dollar -->
+       <!-- 1. custom auth token -->
 
 <!-- 2. login and register page design -->
    <!-- 3. url feature -->

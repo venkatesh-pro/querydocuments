@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { Logout, PersonAdd } from "@mui/icons-material";
 import { Element as Scroll } from "react-scroll";
+import { toast } from "react-hot-toast";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -32,10 +33,12 @@ const Header = () => {
         type: "LOGOUT",
         payload: null,
       });
+      toast.success("Logout Success");
 
       router.push("/login");
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.error || "Something went wrong");
     }
   };
   const handleClick = (event) => {

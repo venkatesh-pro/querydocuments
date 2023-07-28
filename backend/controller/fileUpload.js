@@ -142,7 +142,7 @@ const freeUsageUpload = async (file, user) => {
       );
       return fileUploadId;
     } else {
-      throw new Error("Limit Execeded");
+      throw new Error("Daily Limit Execeded, Upgrade to use more");
     }
   } else {
     const updatedFreeUsageUser = await User.findByIdAndUpdate(
@@ -172,7 +172,7 @@ const freeUsageUpload = async (file, user) => {
       );
       return fileUploadId;
     } else {
-      throw new Error("Limit Execeded");
+      throw new Error("Daily Limit Execeded, Upgrade to use more");
     }
   }
 };
@@ -191,7 +191,7 @@ const paidUsageUpload = async (file, user, planFeature) => {
       );
       return fileUploadId;
     } else {
-      throw new Error("Limit Execeded");
+      throw new Error("Daily Limit Execeded, Upgrade to use more");
     }
   } else {
     const updatedPaidUsageUser = await User.findByIdAndUpdate(
@@ -221,7 +221,7 @@ const paidUsageUpload = async (file, user, planFeature) => {
       );
       return fileUploadId;
     } else {
-      throw new Error("Limit Execeded");
+      throw new Error("Daily Limit Execeded, Upgrade to use more");
     }
   }
 };
@@ -485,7 +485,7 @@ const freeUsageQuery = async (message, fileId, user) => {
       const response = await queryPineConeFunctionFree(message, fileId, user);
       return response;
     } else {
-      throw new Error("Limit Execeded");
+      throw new Error("Daily Limit Execeded, Upgrade to use more");
     }
   } else {
     const updatedFreeUsageUser = await User.findByIdAndUpdate(
@@ -517,7 +517,7 @@ const freeUsageQuery = async (message, fileId, user) => {
       );
       return response;
     } else {
-      throw new Error("Limit Execeded");
+      throw new Error("Daily Limit Execeded, Upgrade to use more");
     }
   }
 };
@@ -591,7 +591,7 @@ const paidUsageQuery = async (message, fileId, user, planFeature) => {
       const response = await queryPineConeFunctionPaid(message, fileId, user);
       return response;
     } else {
-      throw new Error("Limit Execeded");
+      throw new Error("Daily Limit Execeded, Upgrade to use more");
     }
   } else {
     const updatedPaidUsageUser = await User.findByIdAndUpdate(
@@ -617,7 +617,7 @@ const paidUsageQuery = async (message, fileId, user, planFeature) => {
       );
       return response;
     } else {
-      throw new Error("Limit Execeded");
+      throw new Error("Daily Limit Execeded, Upgrade to use more");
     }
   }
 };
@@ -977,7 +977,7 @@ exports.whichplan = async (req, res) => {
     console.log("error", error);
     res
       .status(400)
-      .json(error.message ? error.message : "some thing went wrong");
+      .json({ error: error.message ? error.message : "some thing went wrong" });
   }
 };
 exports.cancelSubsciption = async (req, res) => {
@@ -1005,7 +1005,7 @@ exports.cancelSubsciption = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(400).json(error.message);
+    res.status(400).json({ error: error.message });
   }
 };
 
@@ -1112,7 +1112,7 @@ const paidUsageUploadForProPlanLink = async (url, user) => {
       );
       return fileUploadId;
     } else {
-      throw new Error("Limit Execeded");
+      throw new Error("Daily Limit Execeded, Upgrade to use more");
     }
   } else {
     const updatedPaidUsageUser = await User.findByIdAndUpdate(
@@ -1143,7 +1143,7 @@ const paidUsageUploadForProPlanLink = async (url, user) => {
       );
       return fileUploadId;
     } else {
-      throw new Error("Limit Execeded");
+      throw new Error("Daily Limit Execeded, Upgrade to use more");
     }
   }
 };

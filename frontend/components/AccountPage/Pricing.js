@@ -7,6 +7,7 @@ import { pricingInfo } from "../../constant/HomePage/Pricing";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import api from "../../utils/http-client";
+import { toast } from "react-hot-toast";
 
 const Pricing = ({ fileTypes, handleUploadFile }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -34,6 +35,7 @@ const Pricing = ({ fileTypes, handleUploadFile }) => {
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.error || "Something went wrong");
     }
   };
   const whichplanFunction = async () => {

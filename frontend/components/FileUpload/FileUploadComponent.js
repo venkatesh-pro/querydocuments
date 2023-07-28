@@ -7,8 +7,10 @@ import { fileTypes } from "../../constant/HomePage/fileType";
 import { fileUploadFunction } from "../../function/fileUpload";
 import UrlModal from "./UrlModal/UrlModal";
 import { toast } from "react-hot-toast";
+import { CircularProgress } from "@mui/material";
 
 const FileUploadComponent = ({ planFromDb }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [isFile, setIsFile] = useState(true);
   const [isUrlModal, setIsUrlModal] = useState(false);
 
@@ -18,6 +20,7 @@ const FileUploadComponent = ({ planFromDb }) => {
   const handleUploadFile = async (e) => {
     if (auth?.token) {
       try {
+        setIsLoading(true);
         const file = e;
 
         const formData = new FormData();
@@ -25,9 +28,14 @@ const FileUploadComponent = ({ planFromDb }) => {
         const { data } = await fileUploadFunction(auth.token, formData);
 
         console.log(data);
+
+        setIsLoading(false);
+
         if (data) router.push(`chat/${data}`);
       } catch (error) {
+        setIsLoading(false);
         console.log(error);
+        toast.error(error.response.data.error || "Something went wrong");
       }
     } else {
       toast.error("Login To Upload");
@@ -40,22 +48,32 @@ const FileUploadComponent = ({ planFromDb }) => {
   };
   return (
     <div className="relative">
-      <FileUploader
-        handleChange={handleUploadFile}
-        name="file"
-        types={fileTypes}
-      >
-        <div className="cursor-pointer  sm:w-[600px] w-[90vw] h-[300px] border-2 items-center justify-center flex flex-col  bg-[#EEE6D8] relative rounded-2xl">
-          <FileUpload fontSize="large" />
-          <h3>Drop File</h3>
-          <p>
-            Accepts:{" "}
-            {fileTypes.map((type, i) => {
-              return `${i > 0 ? "," : ""}${type}`;
-            })}
-          </p>
-        </div>
-      </FileUploader>
+      <div className="sm:w-[600px] w-[90vw] h-[300px] border-2 items-center justify-center flex flex-col  bg-[#EEE6D8] relative rounded-2xl">
+        {isLoading ? (
+          <div className="flex items-center flex-col">
+            <CircularProgress />
+            <p>Please Stay, it takes some time</p>
+          </div>
+        ) : (
+          <FileUploader
+            handleChange={handleUploadFile}
+            name="file"
+            types={fileTypes}
+          >
+            <div className="cursor-pointer  sm:w-[600px] w-[90vw] h-[300px] border-2 items-center justify-center flex flex-col  bg-[#EEE6D8] relative rounded-2xl">
+              <FileUpload fontSize="large" />
+              <h3>Drop File</h3>
+              <p>
+                Accepts:{" "}
+                {fileTypes.map((type, i) => {
+                  return `${i > 0 ? "," : ""}${type}`;
+                })}
+              </p>
+            </div>
+          </FileUploader>
+        )}
+      </div>
+
       {planFromDb.toLocaleLowerCase() === "pro" && (
         <p
           onClick={openUrlModal}
