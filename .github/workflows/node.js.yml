@@ -5,7 +5,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -17,19 +17,16 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: cd backend
-    - run: npm i
-    - run: sudo pm2 restart backend
-    - run: cd ..
-    - run: cd frontend
-    - run: npm i
-    - run: npm run build
-    - run: sudo pm2 restart frontend
-    
-    
-    
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: cd backend
+      - run: npm i
+      - run: pm2 restart backend
+      - run: cd ..
+      - run: cd frontend
+      - run: npm i
+      - run: npm run build
+      - run: pm2 restart frontend
