@@ -27,6 +27,7 @@ jobs:
     - run: sudo pm2 restart backend
     - run: cd ..
     - run: cd frontend
+    - run: npm i
     - run: npm run build
     - run: sudo pm2 restart frontend
     
