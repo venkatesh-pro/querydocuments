@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { fileTypes } from "../../constant/HomePage/fileType";
 import { fileUploadFunction } from "../../function/fileUpload";
+import { toast } from "react-hot-toast";
 
 const ChatFileUploadSideBar = () => {
   const [isFile, setIsFile] = useState(true);
@@ -28,6 +29,7 @@ const ChatFileUploadSideBar = () => {
       }
     } else {
       console.log("login to upload");
+      toast.error("Login To Upload");
     }
   };
   return (

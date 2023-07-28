@@ -109,6 +109,12 @@ const checkout = () => {
       // router.push(data);
     }
   };
+
+  useEffect(() => {
+    if (!auth?.token) {
+      router.push("/login");
+    }
+  }, [auth]);
   useEffect(() => {
     sessionStorage.getItem("selectedPlan")
       ? setPlanChoosen(sessionStorage.getItem("selectedPlan"))
@@ -145,103 +151,111 @@ const checkout = () => {
   // paymentCheckoutpage;
   return (
     <>
-      <Head>
-        <title>Checkout</title>
-        <script src="https://checkout.razorpay.com/v1/checkout.js" />
-      </Head>
-      {isLoading ? (
-        "Loading"
-      ) : (
-        <div
-          style={{}}
-          className="flex lg:flex-row flex-col gap-3 justify-center items-center h-[92vh] ml-1 lg:ml-10 mr-1 lg:mr-10"
-        >
-          <div className="w-full bg-[#EEE6D8] lg:p-12 p-7 rounded-2xl">
-            <h1 className="font-bold">Payment Method</h1>
-            <p className="mt-2 mb-2">
-              Choose how would you like to pay for querydocuments.
-            </p>
-            <div className="flex mb-2 items-center pl-4 border border-gray-200 rounded dark:border-gray-700 ">
-              <input
-                id="stripe"
-                type="radio"
-                value={"stripe"}
-                name="payments"
-                className="w-4 h-4"
-                defaultChecked={country !== "IN"}
-                onChange={choosePayments}
-              />
-              <label
-                htmlFor="stripe"
-                className="w-full py-4 ml-2 text-sm font-medium text-gray-900 cursor-pointer"
-              >
-                Credit/Debit Card{" "}
-                {isDesktop && `(Securly processed via Stripe)`}
-              </label>
-            </div>
+      {auth?.token ? (
+        <>
+          <Head>
+            <title>Checkout</title>
+            <script src="https://checkout.razorpay.com/v1/checkout.js" />
+          </Head>
+          {isLoading ? (
+            "Loading"
+          ) : (
+            <div
+              style={{}}
+              className="flex lg:flex-row flex-col gap-3 justify-center items-center h-[92vh] ml-1 lg:ml-10 mr-1 lg:mr-10"
+            >
+              <div className="w-full bg-[#EEE6D8] lg:p-12 p-7 rounded-2xl">
+                <h1 className="font-bold">Payment Method</h1>
+                <p className="mt-2 mb-2">
+                  Choose how would you like to pay for querydocuments.
+                </p>
+                <div className="flex mb-2 items-center pl-4 border border-gray-200 rounded dark:border-gray-700 ">
+                  <input
+                    id="stripe"
+                    type="radio"
+                    value={"stripe"}
+                    name="payments"
+                    className="w-4 h-4"
+                    defaultChecked={country !== "IN"}
+                    onChange={choosePayments}
+                  />
+                  <label
+                    htmlFor="stripe"
+                    className="w-full py-4 ml-2 text-sm font-medium text-gray-900 cursor-pointer"
+                  >
+                    Credit/Debit Card{" "}
+                    {isDesktop && `(Securly processed via Stripe)`}
+                  </label>
+                </div>
 
-            {country === "IN" && (
-              <div className="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
-                <input
-                  id="razorpay"
-                  value={"razorpay"}
-                  type="radio"
-                  name="payments"
-                  className="w-4 h-4 "
-                  onChange={choosePayments}
-                  defaultChecked={country === "IN"}
-                />
-                <label
-                  htmlFor="razorpay"
-                  className="w-full py-4 ml-2 text-sm font-medium text-gray-900 cursor-pointer"
-                >
-                  UPI/Netbanking/Cards
-                  {isDesktop && `(Securly processed via Razorpay)`}
-                </label>
+                {country === "IN" && (
+                  <div className="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                    <input
+                      id="razorpay"
+                      value={"razorpay"}
+                      type="radio"
+                      name="payments"
+                      className="w-4 h-4 "
+                      onChange={choosePayments}
+                      defaultChecked={country === "IN"}
+                    />
+                    <label
+                      htmlFor="razorpay"
+                      className="w-full py-4 ml-2 text-sm font-medium text-gray-900 cursor-pointer"
+                    >
+                      UPI/Netbanking/Cards
+                      {isDesktop && `(Securly processed via Razorpay)`}
+                    </label>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div className="w-full lg:p-12 p-7 bg-[#EEE6D8] rounded-2xl  ">
-            <h1 className="">Selected Plan</h1>
-            <div className="mt-4">
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Plan</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={planChoosen}
-                  label="plan"
-                  onChange={choosePricing}
-                  className=""
-                >
-                  <MenuItem value={"basic"}>Basic</MenuItem>
-                  <MenuItem value={"pro"}>Pro</MenuItem>
-                </Select>
-              </FormControl>
+              <div className="w-full lg:p-12 p-7 bg-[#EEE6D8] rounded-2xl  ">
+                <h1 className="">Selected Plan</h1>
+                <div className="mt-4">
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Plan</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={planChoosen}
+                      label="plan"
+                      onChange={choosePricing}
+                      className=""
+                    >
+                      <MenuItem value={"basic"}>Basic</MenuItem>
+                      <MenuItem value={"pro"}>Pro</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div>
+                  {planChoosen && (
+                    <h1 className="mt-3">
+                      Total ${" "}
+                      {
+                        pricingInfo.find(
+                          (info) =>
+                            info.plan.toLocaleLowerCase() ===
+                            planChoosen.toLocaleLowerCase()
+                        ).dollarPrice
+                      }
+                    </h1>
+                  )}
+                </div>
+                <div>
+                  <button
+                    onClick={handleSubmit}
+                    className="mt-3 border border-gray-200 rounded dark:border-gray-700 w-full p-2 bg-black text-white disabled:bg-gray-400"
+                  >
+                    Subscribe
+                  </button>
+                </div>
+              </div>
             </div>
-            <div>
-              {planChoosen && (
-                <h1 className="mt-3">
-                  Total ${" "}
-                  {
-                    pricingInfo.find(
-                      (info) =>
-                        info.plan.toLocaleLowerCase() ===
-                        planChoosen.toLocaleLowerCase()
-                    ).dollarPrice
-                  }
-                </h1>
-              )}
-            </div>
-            <div>
-              <button
-                onClick={handleSubmit}
-                className="mt-3 border border-gray-200 rounded dark:border-gray-700 w-full p-2 bg-black text-white disabled:bg-gray-400"
-              >
-                Subscribe
-              </button>
-            </div>
-          </div>
+          )}
+        </>
+      ) : (
+        <div className="items-center flex justify-center h-[92vh]">
+          Login To see
         </div>
       )}
     </>

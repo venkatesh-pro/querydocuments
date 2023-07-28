@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { fileTypes } from "../../constant/HomePage/fileType";
 import { fileUploadFunction } from "../../function/fileUpload";
 import UrlModal from "./UrlModal/UrlModal";
+import { toast } from "react-hot-toast";
 
 const FileUploadComponent = ({ planFromDb }) => {
   const [isFile, setIsFile] = useState(true);
@@ -29,6 +30,7 @@ const FileUploadComponent = ({ planFromDb }) => {
         console.log(error);
       }
     } else {
+      toast.error("Login To Upload");
       console.log("login to upload");
     }
   };

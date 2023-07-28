@@ -13,7 +13,14 @@ const PricingCard = ({ info, planFromDb, country }) => {
   const { auth } = useSelector((state) => ({ ...state }));
 
   const router = useRouter();
-
+  const handleSubscribe = async () => {
+    if (auth?.token) {
+      sessionStorage.setItem("selectedPlan", info.plan.toLocaleLowerCase());
+      router.push("/checkout");
+    } else {
+      router.push("/login");
+    }
+  };
   return (
     <Card
       style={{
@@ -74,13 +81,7 @@ const PricingCard = ({ info, planFromDb, country }) => {
             </button>
           ) : (
             <button
-              onClick={() => {
-                sessionStorage.setItem(
-                  "selectedPlan",
-                  info.plan.toLocaleLowerCase()
-                );
-                router.push("/checkout");
-              }}
+              onClick={handleSubscribe}
               className="w-full block text-center bg-black p-2 rounded-xl text-white"
             >
               Subscribe

@@ -70,92 +70,107 @@ function ResponsiveDrawer(props) {
       whichplanFunction();
     }
   }, [auth]);
+
+  useEffect(() => {
+    if (!auth?.token) {
+      router.push("/login");
+    }
+  }, [auth]);
+
   return (
     <>
-      <HeaderChatPage />
-      <Box sx={{ display: "flex" }}>
-        <Box>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{
-              mr: 2,
-              display: { sm: "none" },
-              position: "absolute",
-              top: "15px",
-              left: "20px",
-              zIndex: 12,
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-        </Box>
-        <Box
-          component="nav"
-          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-          aria-label="mailbox folders"
-        >
-          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-          <Drawer
-            container={container}
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-              },
-            }}
-          >
-            {/* {drawer} */}
-            <div className="p-2">
-              <ChatFileUploadSideBar />
-              {allUploads.length > 0 ? (
-                <AllQueryUpload
-                  allUploads={allUploads}
-                  setAllUploads={setAllUploads}
-                />
-              ) : (
-                ""
-              )}
-            </div>
-          </Drawer>
-          <Box
-            sx={{
-              display: { xs: "none", sm: "block" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-              },
-            }}
-            className="bg-[#EEE6D8] h-[92vh] overflow-scroll overflow-x-hidden"
-          >
-            {/* {drawer} */}
-            <div className="p-2">
-              <ChatFileUploadSideBar />
-              {allUploads.length > 0 ? (
-                <AllQueryUpload
-                  allUploads={allUploads}
-                  setAllUploads={setAllUploads}
-                />
-              ) : (
-                ""
-              )}
+      {auth?.token ? (
+        <>
+          <HeaderChatPage />
+          <Box sx={{ display: "flex" }}>
+            <Box>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{
+                  mr: 2,
+                  display: { sm: "none" },
+                  position: "absolute",
+                  top: "15px",
+                  left: "20px",
+                  zIndex: 12,
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Box>
+            <Box
+              component="nav"
+              sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+              aria-label="mailbox folders"
+            >
+              {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+              <Drawer
+                container={container}
+                variant="temporary"
+                open={mobileOpen}
+                onClose={handleDrawerToggle}
+                ModalProps={{
+                  keepMounted: true, // Better open performance on mobile.
+                }}
+                sx={{
+                  display: { xs: "block", sm: "none" },
+                  "& .MuiDrawer-paper": {
+                    boxSizing: "border-box",
+                    width: drawerWidth,
+                  },
+                }}
+              >
+                {/* {drawer} */}
+                <div className="p-2">
+                  <ChatFileUploadSideBar />
+                  {allUploads.length > 0 ? (
+                    <AllQueryUpload
+                      allUploads={allUploads}
+                      setAllUploads={setAllUploads}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </div>
+              </Drawer>
+              <Box
+                sx={{
+                  display: { xs: "none", sm: "block" },
+                  "& .MuiDrawer-paper": {
+                    boxSizing: "border-box",
+                    width: drawerWidth,
+                  },
+                }}
+                className="bg-[#EEE6D8] h-[92vh] overflow-scroll overflow-x-hidden"
+              >
+                {/* {drawer} */}
+                <div className="p-2">
+                  <ChatFileUploadSideBar />
+                  {allUploads.length > 0 ? (
+                    <AllQueryUpload
+                      allUploads={allUploads}
+                      setAllUploads={setAllUploads}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </div>
+              </Box>
+            </Box>
+            <div className="flex h-[92vh] items-center justify-center w-full">
+              {/* change copy from home page one */}
+              <FileUploadComponent planFromDb={planFromDb} />
             </div>
           </Box>
-        </Box>
-        <div className="flex h-[92vh] items-center justify-center w-full">
-          {/* change copy from home page one */}
-          <FileUploadComponent planFromDb={planFromDb} />
+        </>
+      ) : (
+        <div className="items-center flex justify-center h-[92vh]">
+          Login To see
         </div>
-      </Box>
+      )}
     </>
   );
 }
