@@ -28,7 +28,8 @@
     "react-scroll": "^1.8.9",
     "redux": "^4.2.1",
     "redux-devtools-extension": "^2.13.9",
-    "styled-components": "^5.3.11"
+    "styled-components": "^5.3.11",
+    "undici": "^5.22.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
