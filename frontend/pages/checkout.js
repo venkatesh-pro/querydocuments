@@ -41,7 +41,7 @@ const checkout = () => {
     }
     if (paymentMethodChoosen === "stripe") {
       const { data } = await api.post(
-        `http://localhost:5000/api/subscribe-stripe`,
+        `/subscribe-stripe`,
         {
           plan: planChoosen,
         },
@@ -57,7 +57,7 @@ const checkout = () => {
       router.push(data);
     } else if (paymentMethodChoosen === "razorpay") {
       const { data } = await api.post(
-        `http://localhost:5000/api/subscribe-razorpay`,
+        `/subscribe-razorpay`,
         {
           plan: planChoosen,
         },
