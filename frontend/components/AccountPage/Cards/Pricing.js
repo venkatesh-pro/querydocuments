@@ -9,7 +9,11 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-const PricingCard = ({ info, handleCancelSubscription }) => {
+const PricingCard = ({
+  planFromDbWithExpiry,
+  info,
+  handleCancelSubscription,
+}) => {
   const { auth } = useSelector((state) => ({ ...state }));
 
   const router = useRouter();
@@ -53,12 +57,37 @@ const PricingCard = ({ info, handleCancelSubscription }) => {
               Upgrade
             </button>
           )}
-          <button
-            onClick={handleCancelSubscription}
-            className="p-2 rounded-lg mt-[10px] bg-black text-white"
-          >
-            Cancel Subscription
-          </button>
+
+          {planFromDbWithExpiry.currentPlan === "free" ? (
+            <button
+              onClick={() => {
+                router.push("/#pricing");
+              }}
+              className="p-2 rounded-lg mt-[10px] bg-black text-white"
+            >
+              Subscribe
+            </button>
+          ) : (
+            <>
+              {planFromDbWithExpiry.isCanceledSubscription === true ? (
+                <button
+                  onClick={() => {
+                    router.push("/#pricing");
+                  }}
+                  className="p-2 rounded-lg mt-[10px] bg-black text-white"
+                >
+                  Subscribe
+                </button>
+              ) : (
+                <button
+                  onClick={handleCancelSubscription}
+                  className="p-2 rounded-lg mt-[10px] bg-black text-white"
+                >
+                  Cancel Subscription
+                </button>
+              )}
+            </>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -1,20 +1,27 @@
 <!-- 1. razorpay and stripe webhook security -->
 
 2. change plan id in stripe and razorpay
-3. loading icon in upload and chat
-<!-- 4. toast notification -->
-5. max file size, like 10mb for free,
-6. next due date collect from the stripe and razorpay and show in account page
-7. refund status feature
-8. file upload progress
-9. twilio all phone number
-10. don't need to change the refresh token everytime
-13. privacy policy
+   <!-- 3. loading icon in upload and chat -->
+   <!-- 4. toast notification -->
+3. max file size, like 10mb for free,
+4. next due date collect from the stripe and razorpay and show in account page
+5. refund only status feature, like active or not like that
+<!-- 6. file upload progress -->
+6. twilio all phone number
+<!-- 10. don't need to change the refresh token everytime -->
+7. privacy policy
+8. support page
 
-    <!-- 5. remove storing file in s3 -->
+need to uncomment the  // if (isPhoneExist) {
+    //   return res.status(400).json({
+    //     error: "Phone Number Already Used",
+    //   });
+    // }
 
-       <!-- 1. already have the country check api and implemented, using that need to change the current inr or dollar -->
-       <!-- 1. custom auth token -->
+   <!-- 5. remove storing file in s3 -->
+
+      <!-- 1. already have the country check api and implemented, using that need to change the current inr or dollar -->
+      <!-- 1. custom auth token -->
 
 <!-- 2. login and register page design -->
    <!-- 3. url feature -->

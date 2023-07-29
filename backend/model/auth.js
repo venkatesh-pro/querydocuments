@@ -71,6 +71,10 @@ const userSchema = mongoose.Schema(
       required: true,
       enum: ["free", "basic", "pro"],
     },
+    isCanceledSubscription: {
+      type: Boolean,
+      default: false,
+    },
 
     freePlanUsageData: {
       totalFileUsed: {

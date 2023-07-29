@@ -6,6 +6,7 @@ const {
   webhook,
   cancelSubsciption,
   whichplan,
+  planAccountPage,
   subscribeRazorpay,
   subscribeStripe,
   uploadLink,
@@ -27,6 +28,7 @@ router.post("/subscribe-stripe", authCheck, subscribeStripe);
 router.post("/subscribe-razorpay", authCheck, subscribeRazorpay);
 
 router.get("/whichplan", authCheck, whichplan);
+router.get("/planAccountPage", authCheck, planAccountPage);
 // for cancel subscription
 router.post("/cancelSubscribe", authCheck, cancelSubsciption);
 

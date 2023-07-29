@@ -819,7 +819,7 @@ exports.webhook = async (request, response) => {
         const expiryDate = event.data.object.lines.data[0].period.end;
 
         user.paidPlanUsageData.expiry = expiryDate;
-
+        user.isCanceledSubscription = false;
         await user.save();
       }
       // Then define and call a function to handle the event invoice.paid
@@ -903,7 +903,7 @@ exports.razorpayWebhook = async (request, response) => {
           console.log({ expiryDate });
 
           user.paidPlanUsageData.expiry = expiryDate;
-
+          user.isCanceledSubscription = false;
           await user.save();
         }
         break;
@@ -980,6 +980,79 @@ exports.whichplan = async (req, res) => {
       .json({ error: error.message ? error.message : "some thing went wrong" });
   }
 };
+exports.planAccountPage = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email });
+
+    if (user.isStripe === true || user.isRazorpay === true) {
+      const isExpired =
+        user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+
+      console.log({ isExpired });
+
+      if (isExpired) {
+        // need to check for which plan user subscribed , [free, basic, pro]
+
+        // this time i take plan because this is not expired
+        if (user.plan === "basic") {
+          // basic plan
+          return res.json({
+            isExpired: false,
+            currentPlan: "basic",
+            isCanceledSubscription: user.isCanceledSubscription,
+          });
+        } else if (user.plan === "pro") {
+          // pro plan
+          return res.json({
+            isExpired: false,
+            currentPlan: "pro",
+            isCanceledSubscription: user.isCanceledSubscription,
+          });
+        } else {
+          // if it is not expired but user canceled that time
+          return res.json({
+            isExpired: false,
+            currentPlan: "free",
+            isCanceledSubscription: user.isCanceledSubscription,
+          });
+        }
+      } else {
+        if (user.plan === "basic") {
+          // basic plan
+          return res.json({
+            isExpired: true,
+            currentPlan: "basic",
+            isCanceledSubscription: user.isCanceledSubscription,
+          });
+        } else if (user.plan === "pro") {
+          // pro plan
+          return res.json({
+            isExpired: true,
+            currentPlan: "pro",
+            isCanceledSubscription: user.isCanceledSubscription,
+          });
+        } else {
+          return res.json({
+            isExpired: true,
+            currentPlan: "free",
+            isCanceledSubscription: user.isCanceledSubscription,
+          });
+        }
+      }
+    } else {
+      // free plan
+      return res.json({
+        isExpired: false,
+        currentPlan: "free",
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res
+      .status(400)
+      .json({ error: error.message ? error.message : "some thing went wrong" });
+  }
+};
 exports.cancelSubsciption = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.user.email });
@@ -991,6 +1064,7 @@ exports.cancelSubsciption = async (req, res) => {
       );
 
       user.planForUI = "free";
+      user.isCanceledSubscription = true;
       user.save();
       console.log(deleted);
       res.json("success");
@@ -999,13 +1073,14 @@ exports.cancelSubsciption = async (req, res) => {
         user.razorpaySubscriptionId
       );
       user.planForUI = "free";
+      user.isCanceledSubscription = true;
       user.save();
       console.log(deleted);
       res.json("success");
     }
   } catch (error) {
     console.log(error);
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: "Something Went Wrong" });
   }
 };
 

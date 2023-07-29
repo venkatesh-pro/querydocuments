@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast";
 const Pricing = ({ fileTypes, handleUploadFile }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
 
-  const [planFromDb, setPlanFromDb] = useState("");
+  const [planFromDbWithExpiry, setPlanFromDbWithExpiry] = useState({});
   const { auth } = useSelector((state) => ({ ...state }));
   const router = useRouter();
 
@@ -40,14 +40,14 @@ const Pricing = ({ fileTypes, handleUploadFile }) => {
   };
   const whichplanFunction = async () => {
     try {
-      const { data } = await api.get(`/whichplan`, {
+      const { data } = await api.get(`/planAccountPage`, {
         headers: {
           authToken: auth.token,
         },
       });
       console.log("data", data);
 
-      setPlanFromDb(data);
+      setPlanFromDbWithExpiry(data);
     } catch (error) {
       console.log(error);
     }
@@ -57,39 +57,49 @@ const Pricing = ({ fileTypes, handleUploadFile }) => {
       whichplanFunction();
     }
   }, [auth]);
-  return planFromDb === "free" ? (
-    <div className="h-[80vh] flex items-center justify-center">
-      Subscribe to See the page
-    </div>
-  ) : (
-    <div
-      id="pricing"
-      className="h-[80vh] flex flex-col items-center  justify-center"
-    >
-      <div>
-        <h1 className="flex flex-col text-center text-xl ">
-          Current Plan You Subscribed
-        </h1>
-        <h1 className="flex mt-3 flex-col text-center text-3xl ">
-          {planFromDb.toUpperCase()}
-        </h1>
-      </div>
-      <div className="mt-10">
-        {pricingInfo.map((info, i) => {
-          if (
-            info.plan.toLocaleLowerCase() === planFromDb.toLocaleLowerCase()
-          ) {
-            return (
-              <PricingCard
-                key={i}
-                info={info}
-                handleCancelSubscription={handleCancelSubscription}
-              />
-            );
-          }
-        })}
-      </div>
-    </div>
+  return (
+    <>
+      {planFromDbWithExpiry.currentPlan ? (
+        <div
+          id="pricing"
+          className="h-[80vh] flex flex-col items-center  justify-center"
+        >
+          <div>
+            <h1 className="flex flex-col text-center text-xl ">
+              Current Plan You Subscribed
+            </h1>
+            <h1 className="flex mt-3 flex-col text-center text-3xl ">
+              {planFromDbWithExpiry?.currentPlan?.toUpperCase()}
+            </h1>
+          </div>
+          <div className="mt-10">
+            {pricingInfo.map((info, i) => {
+              if (
+                info.plan.toLocaleLowerCase() ===
+                planFromDbWithExpiry.currentPlan.toLocaleLowerCase()
+              ) {
+                return (
+                  <PricingCard
+                    key={i}
+                    info={info}
+                    planFromDbWithExpiry={planFromDbWithExpiry}
+                    handleCancelSubscription={handleCancelSubscription}
+                  />
+                );
+              }
+            })}
+          </div>
+          {planFromDbWithExpiry.isExpired === true && (
+            <p className="mt-10">
+              "Your Plan is Expired, So you will use free plan until you
+              subscribe"
+            </p>
+          )}
+        </div>
+      ) : (
+        "Loading"
+      )}
+    </>
   );
 };
 
