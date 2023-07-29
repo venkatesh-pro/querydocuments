@@ -161,8 +161,17 @@ const Header = () => {
               My account
             </Link>
           </MenuItem>
-          <Divider />
 
+          <Divider />
+          <MenuItem>
+            <Link
+              target="_blank"
+              href={"https://wa.me/+916385487401"}
+              className="flex"
+            >
+              Get Support
+            </Link>
+          </MenuItem>
           <MenuItem onClick={handleLogout}>
             <ListItemIcon>
               <Logout fontSize="small" />
