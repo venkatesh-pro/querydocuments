@@ -2,15 +2,13 @@
 
 2. change plan id in stripe and razorpay
 3. loading icon in upload and chat
-4. toast notification
+<!-- 4. toast notification -->
 5. max file size, like 10mb for free,
 6. next due date collect from the stripe and razorpay and show in account page
 7. refund status feature
 8. file upload progress
 9. twilio all phone number
 10. don't need to change the refresh token everytime
-11. payment loading button
-12. CircularProgress cause hybridation error , do like this to solve error {isUser && auth?.token ? ( copied from headers
 13. privacy policy
 
     <!-- 5. remove storing file in s3 -->

@@ -169,7 +169,7 @@ exports.refreshToken = async (req, res) => {
 
     const isUser = await User.findOne({ refreshToken });
     if (!isUser) {
-      console.log(`auth token not found; ${refreshToken}`);
+      console.log(`refresh token not found; ${refreshToken}`);
       return res.status(400);
     }
 
@@ -194,19 +194,18 @@ exports.refreshToken = async (req, res) => {
       }
     );
     // Generate refresh token
-    const newRefreshToken = jwt.sign(
-      { email: user.email },
-      process.env.JWT_REFRESH_TOKEN,
-      {
-        expiresIn: "7d",
-      }
-    );
+    // const newRefreshToken = jwt.sign(
+    //   { email: user.email },
+    //   process.env.JWT_REFRESH_TOKEN,
+    //   {
+    //     expiresIn: "7d",
+    //   }
+    // );
 
     const updatedUser = await User.findOneAndUpdate(
       { email: isUser.email },
       {
         token: newAuthToken,
-        refreshToken: newRefreshToken,
       },
       { new: true }
     );
