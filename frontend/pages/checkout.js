@@ -5,6 +5,7 @@ import {
   Select,
   useMediaQuery,
 } from "@mui/material";
+
 import React, { useEffect, useState } from "react";
 import { pricingInfo } from "../constant/HomePage/Pricing";
 import { useSelector } from "react-redux";
@@ -12,11 +13,15 @@ import { useRouter } from "next/router";
 import api from "../utils/http-client";
 import Head from "next/head";
 import { toast } from "react-hot-toast";
+import Loader from "../components/Loader";
 
 const checkout = () => {
+  const [isUser, setIsUser] = useState(false);
+
   const [planChoosen, setPlanChoosen] = useState("");
   const [country, setCountry] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingForPayment, setIsLoadingForPayment] = useState(false);
   const [paymentMethodChoosen, setPaymentMethodChoosen] = useState("");
 
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -36,9 +41,12 @@ const checkout = () => {
   const handleSubmit = async () => {
     if (planChoosen == "" || paymentMethodChoosen == "") {
       // toast
+      toast.error("Please Choose Plan");
       console.log("select the plan or payment Method", paymentMethodChoosen);
       return;
     }
+
+    setIsLoadingForPayment(true);
     if (paymentMethodChoosen === "stripe") {
       const { data } = await api.post(
         `/subscribe-stripe`,
@@ -53,6 +61,7 @@ const checkout = () => {
       );
 
       console.log(data);
+      setIsLoadingForPayment(false);
 
       router.push(data);
     } else if (paymentMethodChoosen === "razorpay") {
@@ -103,7 +112,7 @@ const checkout = () => {
           color: "#EEE6D8",
         },
       };
-
+      setIsLoadingForPayment(false);
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
       // router.push(data);
@@ -148,17 +157,24 @@ const checkout = () => {
     getCountry();
   }, []);
 
+  useEffect(() => {
+    if (auth?.token) {
+      setIsUser(true);
+    }
+  }, [auth]);
   // paymentCheckoutpage;
   return (
     <>
-      {auth?.token ? (
+      {isUser && auth?.token ? (
         <>
           <Head>
             <title>Checkout</title>
             <script src="https://checkout.razorpay.com/v1/checkout.js" />
           </Head>
           {isLoading ? (
-            "Loading"
+            <div className="flex items-center flex-col">
+              <Loader />
+            </div>
           ) : (
             <div
               style={{}}
@@ -246,7 +262,11 @@ const checkout = () => {
                     onClick={handleSubmit}
                     className="mt-3 border border-gray-200 rounded dark:border-gray-700 w-full p-2 bg-black text-white disabled:bg-gray-400"
                   >
-                    Subscribe
+                    {isLoadingForPayment ? (
+                      <Loader size={"14px"} />
+                    ) : (
+                      "Subscribe"
+                    )}
                   </button>
                 </div>
               </div>

@@ -9,6 +9,9 @@
 8. file upload progress
 9. twilio all phone number
 10. don't need to change the refresh token everytime
+11. payment loading button
+12. CircularProgress cause hybridation error , do like this to solve error {isUser && auth?.token ? ( copied from headers
+13. privacy policy
 
     <!-- 5. remove storing file in s3 -->
 
