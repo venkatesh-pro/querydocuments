@@ -86,6 +86,7 @@ const index = () => {
           role: data.role,
           _id: data._id,
           token: data.token,
+          picture: data.picture,
         },
       });
       router.push("/");
