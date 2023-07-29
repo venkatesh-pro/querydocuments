@@ -29,6 +29,7 @@ const index = () => {
             _id: data._id,
             token: data.token,
             refreshToken: data.refreshToken,
+            picture: data.picture,
           },
         });
 
