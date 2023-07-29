@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 const index = () => {
+  const [isUser, setIsUser] = useState(false);
+
   const { auth } = useSelector((state) => ({ ...state }));
   const router = useRouter();
 
@@ -13,9 +15,14 @@ const index = () => {
       router.push("/login");
     }
   }, [auth]);
+  useEffect(() => {
+    if (auth?.token) {
+      setIsUser(true);
+    }
+  }, [auth]);
   return (
     <div className="w-full h-[92vh]">
-      {auth?.token ? (
+      {isUser && auth?.token ? (
         <Pricing />
       ) : (
         <div className="items-center flex justify-center h-[92vh]">

@@ -26,14 +26,18 @@ import { useEffect } from "react";
 import AllQueryUpload from "../../components/ChatPage/AllQueryUpload";
 import FileUploadComponent from "../../components/FileUpload/FileUploadComponent";
 import Chat from "../../components/ChatPage/Chat";
+import { useMediaQuery } from "@mui/material";
 
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
   const [allUploads, setAllUploads] = useState([]);
+  const [isUser, setIsUser] = useState(false);
 
   const { auth } = useSelector((state) => ({ ...state }));
   const router = useRouter();
+
+  const isDesktop = useMediaQuery("(min-width:768px)");
 
   const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -65,9 +69,15 @@ function ResponsiveDrawer(props) {
     }
   }, [auth]);
 
+  useEffect(() => {
+    if (auth?.token) {
+      setIsUser(true);
+    }
+  }, [auth]);
+
   return (
     <>
-      {auth?.token ? (
+      {isUser && auth?.token ? (
         <>
           <HeaderChatPage />
           <Box sx={{ display: "flex" }}>
@@ -150,7 +160,7 @@ function ResponsiveDrawer(props) {
             </Box>
             <div className="flex h-[92vh] w-full">
               {/* chat */}
-              <Chat />
+              <Chat isDesktop={isDesktop} />
             </div>
           </Box>
         </>
