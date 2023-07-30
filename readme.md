@@ -7,7 +7,7 @@
 4. next due date collect from the stripe and razorpay and show in account page
 5. refund only status feature, like active or not like that
 <!-- 6. file upload progress -->
-6. twilio all phone number
+6. twilio all phone number 
 7. bug in dollar inr like that in pricing card in account page
 8. razorpay is not working
 

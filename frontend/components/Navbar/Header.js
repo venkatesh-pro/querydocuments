@@ -53,7 +53,7 @@ const Header = () => {
     }
   }, [auth]);
   return (
-    <div className="h-[8vh] sticky top-0 bg-[#ffffff] shadow-md z-10 w-full">
+    <div className="h-[64px] sticky top-0 bg-[#ffffff] shadow-md z-10 w-full">
       <div className="ml-4 mr-4 flex items-center justify-between h-full">
         <div>
           <Link href={"/"}>

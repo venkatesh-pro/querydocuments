@@ -32,6 +32,7 @@ const Pricing = ({ fileTypes, handleUploadFile }) => {
         );
 
         console.log(data);
+        toast.success("Cancelled Successfully");
       }
     } catch (error) {
       console.log(error);
