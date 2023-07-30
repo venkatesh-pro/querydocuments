@@ -25,7 +25,7 @@ router.post("/sendMessage", authCheck, sendMessage);
 // payment gateway
 
 router.post("/subscribe-stripe", authCheck, subscribeStripe);
-router.post("/subscribe-razorpay", authCheck, subscribeRazorpay);
+// router.post("/subscribe-razorpay", authCheck, subscribeRazorpay);
 
 router.get("/whichplan", authCheck, whichplan);
 router.get("/planAccountPage", authCheck, planAccountPage);
@@ -34,6 +34,6 @@ router.post("/cancelSubscribe", authCheck, cancelSubsciption);
 
 // webhook
 router.post("/stripe-webhook", webhook);
-router.post("/razorpay-webhook", razorpayWebhook);
+// router.post("/razorpay-webhook", razorpayWebhook);
 
 module.exports = router;

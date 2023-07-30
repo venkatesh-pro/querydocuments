@@ -41,7 +41,7 @@ const PricingCard = ({ info, planFromDb, country }) => {
             component="div"
           >
             {country === "IN"
-              ? `₹ ${info.indianPrice}`
+              ? `₹ ${info.dollarPrice}`
               : `$${info.dollarPrice}`}
             /mo
           </Typography>

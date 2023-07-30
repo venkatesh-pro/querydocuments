@@ -146,11 +146,7 @@ const checkout = () => {
 
         setCountry(data);
 
-        if (data === "IN") {
-          setPaymentMethodChoosen("razorpay");
-        } else {
-          setPaymentMethodChoosen("stripe");
-        }
+        setPaymentMethodChoosen("stripe");
       } catch (error) {
         console.log(error);
         setIsLoading(false);
@@ -198,7 +194,7 @@ const checkout = () => {
                     value={"stripe"}
                     name="payments"
                     className="w-4 h-4"
-                    defaultChecked={country !== "IN"}
+                    defaultChecked={country}
                     onChange={choosePayments}
                   />
                   <label
@@ -210,7 +206,7 @@ const checkout = () => {
                   </label>
                 </div>
 
-                {country === "IN" && (
+                {/* {country === "IN" && (
                   <div className="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
                     <input
                       id="razorpay"
@@ -229,7 +225,7 @@ const checkout = () => {
                       {isDesktop && `(Securly processed via Razorpay)`}
                     </label>
                   </div>
-                )}
+                )} */}
               </div>
               <div className="w-full lg:p-12 p-7 bg-[#EEE6D8] rounded-2xl  ">
                 <h1 className="">Selected Plan</h1>
