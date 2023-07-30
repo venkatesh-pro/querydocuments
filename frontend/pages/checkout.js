@@ -39,83 +39,89 @@ const checkout = () => {
   };
 
   const handleSubmit = async () => {
-    if (planChoosen == "" || paymentMethodChoosen == "") {
-      // toast
-      toast.error("Please Choose Plan");
-      console.log("select the plan or payment Method", paymentMethodChoosen);
-      return;
-    }
+    try {
+      if (planChoosen == "" || paymentMethodChoosen == "") {
+        // toast
+        toast.error("Please Choose Plan");
+        console.log("select the plan or payment Method", paymentMethodChoosen);
+        return;
+      }
 
-    setIsLoadingForPayment(true);
-    if (paymentMethodChoosen === "stripe") {
-      const { data } = await api.post(
-        `/subscribe-stripe`,
-        {
-          plan: planChoosen,
-        },
-        {
-          headers: {
-            authToken: auth.token,
+      setIsLoadingForPayment(true);
+      if (paymentMethodChoosen === "stripe") {
+        const { data } = await api.post(
+          `/subscribe-stripe`,
+          {
+            plan: planChoosen,
           },
-        }
-      );
-
-      console.log(data);
-      setIsLoadingForPayment(false);
-
-      router.push(data);
-    } else if (paymentMethodChoosen === "razorpay") {
-      const { data } = await api.post(
-        `/subscribe-razorpay`,
-        {
-          plan: planChoosen,
-        },
-        {
-          headers: {
-            authToken: auth.token,
-          },
-        }
-      );
-
-      console.log("data", data);
-
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_PUBLIC_KEY,
-        subscription_id: data.id,
-        name: "querydocuments",
-        description: "Monthly Subscription",
-        // image: "/your_logo.jpg",
-        handler: function (response) {
-          console.log(response);
-          if (
-            response.razorpay_payment_id &&
-            response.razorpay_subscription_id &&
-            response.razorpay_signature
-          ) {
-            router.push("/success");
-          } else {
-            router.push("/failed");
+          {
+            headers: {
+              authToken: auth.token,
+            },
           }
-          // alert(response.razorpay_payment_id),
-          //   alert(response.razorpay_subscription_id),
-          //   alert(response.razorpay_signature);
-        },
-        prefill: {
-          email: data.email,
-          contact: `${data.countryCode}${data.phoneNumber}`,
-        },
-        // notes: {
-        //   note_key_1: "Tea. Earl Grey. Hot",
-        //   note_key_2: "Make it so.",
-        // },
-        theme: {
-          color: "#EEE6D8",
-        },
-      };
+        );
+
+        console.log(data);
+        setIsLoadingForPayment(false);
+
+        router.push(data);
+      } else if (paymentMethodChoosen === "razorpay") {
+        const { data } = await api.post(
+          `/subscribe-razorpay`,
+          {
+            plan: planChoosen,
+          },
+          {
+            headers: {
+              authToken: auth.token,
+            },
+          }
+        );
+
+        console.log("data", data);
+
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_PUBLIC_KEY,
+          subscription_id: data.id,
+          name: "querydocuments",
+          description: "Monthly Subscription",
+          // image: "/your_logo.jpg",
+          handler: function (response) {
+            console.log(response);
+            if (
+              response.razorpay_payment_id &&
+              response.razorpay_subscription_id &&
+              response.razorpay_signature
+            ) {
+              router.push("/success");
+            } else {
+              router.push("/failed");
+            }
+            // alert(response.razorpay_payment_id),
+            //   alert(response.razorpay_subscription_id),
+            //   alert(response.razorpay_signature);
+          },
+          prefill: {
+            email: data.email,
+            contact: `${data.countryCode}${data.phoneNumber}`,
+          },
+          // notes: {
+          //   note_key_1: "Tea. Earl Grey. Hot",
+          //   note_key_2: "Make it so.",
+          // },
+          theme: {
+            color: "#EEE6D8",
+          },
+        };
+        setIsLoadingForPayment(false);
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+        // router.push(data);
+      }
+    } catch (error) {
+      console.log(error);
       setIsLoadingForPayment(false);
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
-      // router.push(data);
+      toast.error(error.response.data.error || "Something Went Wrong");
     }
   };
 
@@ -260,6 +266,7 @@ const checkout = () => {
                 <div>
                   <button
                     onClick={handleSubmit}
+                    disabled={isLoadingForPayment}
                     className="mt-3 border border-gray-200 rounded dark:border-gray-700 w-full p-2 bg-black text-white disabled:bg-gray-400"
                   >
                     {isLoadingForPayment ? (

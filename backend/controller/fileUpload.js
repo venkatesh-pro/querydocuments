@@ -730,8 +730,12 @@ exports.subscribeStripe = async (req, res) => {
     user.save();
     // console.log(session);
     res.json(session.url);
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
+
+    res.status(400).json({
+      error: "Something Went Wrong",
+    });
   }
 };
 exports.subscribeRazorpay = async (req, res) => {
@@ -770,8 +774,12 @@ exports.subscribeRazorpay = async (req, res) => {
 
     console.log(subscription);
     res.json(subscription);
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
+
+    res.status(400).json({
+      error: "Something Went Wrong",
+    });
   }
 };
 exports.webhook = async (request, response) => {

@@ -8,15 +8,35 @@
 5. refund only status feature, like active or not like that
 <!-- 6. file upload progress -->
 6. twilio all phone number
-<!-- 10. don't need to change the refresh token everytime -->
-7. privacy policy
-8. support page
+7. bug in dollar inr like that in pricing card in account page
+8. razorpay is not working
 
-need to uncomment the  // if (isPhoneExist) {
-    //   return res.status(400).json({
-    //     error: "Phone Number Already Used",
-    //   });
-    // }
+{
+  id: 'cust_MJdxcxDQRExwLR',
+  entity: 'customer',
+  name: null,
+  email: 'testemailecommerce27@gmail.com',
+  contact: null,
+  gstin: null,
+  notes: [],
+  created_at: 1690639495
+}
+{
+  statusCode: 400,
+  error: {
+    code: 'BAD_REQUEST_ERROR',
+    description: 'The id provided does not exist'
+  }
+}
+   <!-- 10. don't need to change the refresh token everytime -->
+   <!-- 7. privacy policy -->
+   <!-- 8. support page -->
+
+need to uncomment the // if (isPhoneExist) {
+// return res.status(400).json({
+// error: "Phone Number Already Used",
+// });
+// }
 
    <!-- 5. remove storing file in s3 -->
 

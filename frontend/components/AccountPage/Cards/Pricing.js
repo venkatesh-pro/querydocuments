@@ -52,11 +52,11 @@ const PricingCard = ({
           </Typography>
         </div>
         <div className="mt-10 flex flex-col ">
-          {info.plan.toLocaleLowerCase() === "basic" && (
+          {/* {info.plan.toLocaleLowerCase() === "basic" && (
             <button className="p-2 rounded-lg bg-green-700 text-white">
               Upgrade
             </button>
-          )}
+          )} */}
 
           {planFromDbWithExpiry.currentPlan === "free" ? (
             <button
