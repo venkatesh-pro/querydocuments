@@ -1,33 +1,36 @@
 <!-- 1. razorpay and stripe webhook security -->
 
-2. change plan id in stripe and razorpay
+1. token store schema
+1. style header and upload, and in chat page also
+1. change plan id in stripe and razorpay
    <!-- 3. loading icon in upload and chat -->
    <!-- 4. toast notification -->
-3. max file size, like 10mb for free,
-4. next due date collect from the stripe and razorpay and show in account page
-5. refund only status feature, like active or not like that
+1. max file size, like 10mb for free,
+1. next due date collect from the stripe and razorpay and show in account page
+1. refund only status feature, like active or not like that
 <!-- 6. file upload progress -->
-6. twilio all phone number 
-7. bug in dollar inr like that in pricing card in account page
-8. razorpay is not working
+1. twilio all phone number
+1. bug in dollar inr like that in pricing card in account page
+1. razorpay is not working
 
 {
-  id: 'cust_MJdxcxDQRExwLR',
-  entity: 'customer',
-  name: null,
-  email: 'testemailecommerce27@gmail.com',
-  contact: null,
-  gstin: null,
-  notes: [],
-  created_at: 1690639495
+id: 'cust_MJdxcxDQRExwLR',
+entity: 'customer',
+name: null,
+email: 'testemailecommerce27@gmail.com',
+contact: null,
+gstin: null,
+notes: [],
+created_at: 1690639495
 }
 {
-  statusCode: 400,
-  error: {
-    code: 'BAD_REQUEST_ERROR',
-    description: 'The id provided does not exist'
-  }
+statusCode: 400,
+error: {
+code: 'BAD_REQUEST_ERROR',
+description: 'The id provided does not exist'
 }
+}
+
    <!-- 10. don't need to change the refresh token everytime -->
    <!-- 7. privacy policy -->
    <!-- 8. support page -->
