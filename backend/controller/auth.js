@@ -188,13 +188,17 @@ exports.refreshToken = async (req, res) => {
     console.log("refresh token", refreshToken);
     if (!refreshToken) {
       console.log("refreshToken(): Missing refresh token");
-      return res.status(400).end();
+      return res.status(400).json({
+        error: "Missing token",
+      });
     }
 
     const isToken = await Token.findOne({ refreshToken });
     if (!isToken) {
       console.log(`refresh token not found; ${refreshToken}`);
-      return res.status(400);
+      return res.status(400).json({
+        error: "Token found error",
+      });
     }
 
     const decoded = await jwt.verify(
@@ -207,7 +211,9 @@ exports.refreshToken = async (req, res) => {
 
     if (!user) {
       console.log(`User not found for refresh token; ${refreshToken}`);
-      return res.status(400);
+      return res.status(400).json({
+        error: "User found error",
+      });
     }
 
     const newAuthToken = jwt.sign(
