@@ -17,12 +17,12 @@ const userSchema = mongoose.Schema(
     phoneNumber: {
       type: String,
     },
-    token: {
-      type: String,
-    },
-    refreshToken: {
-      type: String,
-    },
+    // token: {
+    //   type: String,
+    // },
+    // refreshToken: {
+    //   type: String,
+    // },
     // countryCode: {
     //   type: String,
     // },

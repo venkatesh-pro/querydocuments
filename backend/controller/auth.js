@@ -1,5 +1,6 @@
 const User = require("../model/auth");
 const TempUser = require("../model/tempUser");
+const Token = require("../model/token");
 const geoip = require("geoip-lite");
 const jwt = require("jsonwebtoken");
 
@@ -68,6 +69,8 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
           });
         }
 
+        await TempUser.deleteOne({ email, phoneNumber });
+
         const newAuthToken = jwt.sign(
           { email: email },
           process.env.JWT_AUTH_TOKEN,
@@ -89,13 +92,22 @@ exports.verifyPhoneNumberOtp = async (req, res) => {
           picture,
           user_id,
           phoneNumber,
+          // token: newAuthToken,
+          // refreshToken: newRefreshToken,
+        });
+        await Token.create({
+          userId: newUser._id,
           token: newAuthToken,
           refreshToken: newRefreshToken,
         });
-
-        await TempUser.deleteOne({ email, phoneNumber });
-
-        res.status(200).json(newUser);
+        res.status(200).json({
+          _id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+          picture: newUser.picture,
+          token: newAuthToken,
+          refreshToken: newRefreshToken,
+        });
       } else {
         return res.status(400).json({
           error: "Wrong Otp",
@@ -135,16 +147,28 @@ exports.login = async (req, res) => {
         }
       );
 
-      const updatedUser = await User.findOneAndUpdate(
-        { email },
-        {
-          token: newAuthToken,
-          refreshToken: newRefreshToken,
-        },
-        { new: true }
-      );
+      // const updatedUser = await User.findOneAndUpdate(
+      //   { email },
+      //   {
+      //     token: newAuthToken,
+      //     refreshToken: newRefreshToken,
+      //   },
+      //   { new: true }
+      // );
 
-      res.status(200).json(updatedUser);
+      await Token.create({
+        userId: user._id,
+        token: newAuthToken,
+        refreshToken: newRefreshToken,
+      });
+      res.status(200).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        picture: user.picture,
+        token: newAuthToken,
+        refreshToken: newRefreshToken,
+      });
     } else {
       res.status(400).json({
         error: "No User Found, Please Register First",
@@ -167,14 +191,14 @@ exports.refreshToken = async (req, res) => {
       return res.status(400).end();
     }
 
-    const isUser = await User.findOne({ refreshToken });
-    if (!isUser) {
+    const isToken = await Token.findOne({ refreshToken });
+    if (!isToken) {
       console.log(`refresh token not found; ${refreshToken}`);
       return res.status(400);
     }
 
     const decoded = await jwt.verify(
-      isUser.refreshToken,
+      isToken.refreshToken,
       process.env.JWT_REFRESH_TOKEN
     );
 
@@ -193,25 +217,23 @@ exports.refreshToken = async (req, res) => {
         expiresIn: "1h",
       }
     );
-    // Generate refresh token
-    const newRefreshToken = jwt.sign(
-      { email: user.email },
-      process.env.JWT_REFRESH_TOKEN,
-      {
-        expiresIn: "7d",
-      }
-    );
 
-    const updatedUser = await User.findOneAndUpdate(
-      { email: isUser.email },
-      {
-        token: newAuthToken,
-        refreshToken: newRefreshToken,
-      },
-      { new: true }
-    );
+    // const updatedUser = await User.findOneAndUpdate(
+    //   { email: isUser.email },
+    //   {
+    //     token: newAuthToken,
+    //   },
+    //   { new: true }
+    // );
 
-    res.status(200).json(updatedUser);
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      picture: user.picture,
+      token: newAuthToken,
+      refreshToken: refreshToken,
+    });
   } catch (error) {
     console.log(error);
     res.status(400).json({
