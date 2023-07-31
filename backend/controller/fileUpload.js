@@ -1034,6 +1034,7 @@ exports.planAccountPage = async (req, res) => {
             isExpired: false,
             currentPlan: "basic",
             isCanceledSubscription: user.isCanceledSubscription,
+            dateToCharged: new Date(expiryTimestamp * 1000),
           });
         } else if (user.plan === "pro") {
           // pro plan
@@ -1041,6 +1042,7 @@ exports.planAccountPage = async (req, res) => {
             isExpired: false,
             currentPlan: "pro",
             isCanceledSubscription: user.isCanceledSubscription,
+            dateToCharged: new Date(expiryTimestamp * 1000),
           });
         } else {
           // if it is not expired but user canceled that time
@@ -1048,6 +1050,7 @@ exports.planAccountPage = async (req, res) => {
             isExpired: false,
             currentPlan: "free",
             isCanceledSubscription: user.isCanceledSubscription,
+            dateToCharged: new Date(expiryTimestamp * 1000),
           });
         }
       } else {
