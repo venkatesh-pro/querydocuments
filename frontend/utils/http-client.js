@@ -55,7 +55,7 @@ api.interceptors.response.use(
               `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/refreshToken`,
               {
                 headers: {
-                  r_t: userAuth.refreshToken,
+                  refresh_token: userAuth.refreshToken,
                 },
               }
             );
