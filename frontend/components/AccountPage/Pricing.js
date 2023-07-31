@@ -96,11 +96,15 @@ const Pricing = ({ fileTypes, handleUploadFile }) => {
               subscribe"
             </p>
           )}
-          {planFromDbWithExpiry.dateToCharged && (
+
+          {!planFromDbWithExpiry.isCanceledSubscription &&
+          planFromDbWithExpiry.dateToCharged ? (
             <p className="mt-10 bg-green-300 p-2 rounded-lg">
               You will be Automatically Charged In:{" "}
               {planFromDbWithExpiry.dateToCharged.split("T")[0]}
             </p>
+          ) : (
+            ""
           )}
         </div>
       ) : (
