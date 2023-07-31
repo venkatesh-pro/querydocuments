@@ -24,7 +24,7 @@ router.post(
 // i user authCheckFirebase to get the email from the token of firebase
 router.post("/login", authCheckFirebase, login);
 
-router.get("/refreshToken", refreshToken);
+router.get("/rt", refreshToken);
 
 // getCountry
 router.get("/paymentCheckoutpage", authCheck, getCountry);

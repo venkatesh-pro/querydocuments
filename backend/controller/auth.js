@@ -184,7 +184,7 @@ exports.login = async (req, res) => {
 
 exports.refreshToken = async (req, res) => {
   try {
-    const refreshToken = req.headers.refresh_token;
+    const refreshToken = req.headers.rt;
     console.log(req.headers);
     console.log("refresh token", refreshToken);
     if (!refreshToken) {

@@ -52,10 +52,10 @@ api.interceptors.response.use(
               userAuth.refreshToken
             );
             const tokenResponse = await axios.get(
-              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/refreshToken`,
+              `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rt`,
               {
                 headers: {
-                  refresh_token: userAuth.refreshToken,
+                  rt: userAuth.refreshToken,
                 },
               }
             );
