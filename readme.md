@@ -1,6 +1,9 @@
 <!-- 1. razorpay and stripe webhook security -->
 
-1. token store schema
+1. instead of showing it is expired in account page we need to wait until the day complete and we need allow to use the current plan they subscribe within the day
+
+<!-- 1. token store schema -->
+
 1. style header and upload, and in chat page also
 1. change plan id in stripe and razorpay
    <!-- 3. loading icon in upload and chat -->

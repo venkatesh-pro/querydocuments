@@ -61,7 +61,7 @@ const HeaderChatPage = () => {
           </Link>
         </div>
         <ul className="h-full items-center flex justify-between">
-          <li>
+          {/* <li>
             <Scroll
               activeClass="active"
               to="pricing"
@@ -73,7 +73,7 @@ const HeaderChatPage = () => {
             >
               <Link href={"/#pricing"}>Pricing</Link>
             </Scroll>
-          </li>
+          </li> */}
 
           {isUser && auth?.token ? (
             <>
