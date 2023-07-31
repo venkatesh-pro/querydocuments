@@ -359,8 +359,15 @@ exports.uploadFile = async (req, res) => {
       // }
 
       // we check this for if user cancel inbetween before the subscription expired
-      const isExpired =
-        user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+      // const isExpired =
+      //   user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+
+      const expiryTimestamp = user?.paidPlanUsageData?.expiry;
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+
+      const extendedExpiryTimestamp = expiryTimestamp + 7200; //adding extra 2hours , for stripe confirm will take 1 hour
+
+      const isExpired = extendedExpiryTimestamp >= currentTimestamp;
 
       console.log({ isExpired });
       // console.log({ isActive });
@@ -631,8 +638,15 @@ exports.sendMessage = async (req, res) => {
 
     if (user.isStripe === true || user.isRazorpay === true) {
       // continue
-      const isExpired =
-        user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+      // const isExpired =
+      //   user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+
+      const expiryTimestamp = user?.paidPlanUsageData?.expiry;
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+
+      const extendedExpiryTimestamp = expiryTimestamp + 7200; //adding extra 2hours , for stripe confirm will take 1 hour
+
+      const isExpired = extendedExpiryTimestamp >= currentTimestamp;
 
       console.log({ isExpired });
 
@@ -957,9 +971,15 @@ exports.whichplan = async (req, res) => {
       // }
 
       // if active then continue to paid else free
-      const isExpired =
-        user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+      // const isExpired =
+      //   user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
 
+      const expiryTimestamp = user?.paidPlanUsageData?.expiry;
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+
+      const extendedExpiryTimestamp = expiryTimestamp + 7200; //adding extra 2hours , for stripe confirm will take 1 hour
+
+      const isExpired = extendedExpiryTimestamp >= currentTimestamp;
       console.log({ isExpired });
 
       if (isExpired) {
@@ -993,8 +1013,14 @@ exports.planAccountPage = async (req, res) => {
     const user = await User.findOne({ email: req.user.email });
 
     if (user.isStripe === true || user.isRazorpay === true) {
-      const isExpired =
-        user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+      // const isExpired =
+      //   user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+      const expiryTimestamp = user?.paidPlanUsageData?.expiry;
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+
+      const extendedExpiryTimestamp = expiryTimestamp + 7200; //adding extra 2hours , for stripe confirm will take 1 hour
+
+      const isExpired = extendedExpiryTimestamp >= currentTimestamp;
 
       console.log({ isExpired });
 
@@ -1242,9 +1268,14 @@ exports.uploadLink = async (req, res) => {
       // continue
 
       // we check this for if user cancel inbetween before the subscription expired
-      const isExpired =
-        user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+      // const isExpired =
+      //   user?.paidPlanUsageData?.expiry >= Math.floor(Date.now() / 1000); // 1689388322 > 1689302047
+      const expiryTimestamp = user?.paidPlanUsageData?.expiry;
+      const currentTimestamp = Math.floor(Date.now() / 1000);
 
+      const extendedExpiryTimestamp = expiryTimestamp + 7200; //adding extra 2hours , for stripe confirm will take 1 hour
+
+      const isExpired = extendedExpiryTimestamp >= currentTimestamp;
       console.log({ isExpired });
       // console.log({ isActive });
 
