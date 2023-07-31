@@ -136,7 +136,7 @@ exports.login = async (req, res) => {
         { email: email },
         process.env.JWT_AUTH_TOKEN,
         {
-          expiresIn: "5m",
+          expiresIn: "1h",
         }
       );
       const newRefreshToken = jwt.sign(
