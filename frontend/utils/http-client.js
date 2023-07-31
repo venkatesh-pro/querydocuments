@@ -45,12 +45,6 @@ api.interceptors.response.use(
           }
           let data;
           try {
-            // before doing refreshtoken request,
-            console.log("before doing refreshtoken request", userAuth);
-            console.log(
-              "before doing refreshtoken request",
-              userAuth.refreshToken
-            );
             const tokenResponse = await axios.get(
               `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rt`,
               {
